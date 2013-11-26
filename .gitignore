@@ -1,0 +1,14 @@
+syntax:glob
+Debug/
+Release/
+x64/
+bin/
+lib/
+*.sdf
+*.opensdf
+*.suo
+x86/
+*.user
+*.filters
+.dropbox
+desktop.ini
