@@ -22,7 +22,7 @@ private:
 public:
 	Snaku( ) : FurrovineGame( ), 
 	windowdriver( ), 
-	window( windowdriver, WindowDescription{ ">=== Snaku ===<", WindowStyles::BorderedTransparent } ),
+	window( windowdriver, WindowDescription{ ">=== Snaku ===<", WindowStyles::Bordered } ),
 	windowservice( Services, window ), graphicsservice( Services, graphics ) {
 		window.Show( );
 	}
