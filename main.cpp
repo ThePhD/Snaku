@@ -8,6 +8,7 @@
 #include <Furrovine++/Text/RasterFont.h>
 #include <Furrovine++/Graphics/Window.h>
 #include <Furrovine++/Graphics/GraphicsDevice.h>
+#include <Furrovine++/Graphics/NymphBatch.h>
 #include <Furrovine++/Pipeline/RasterFontDataLoader.h>
 #include <Furrovine++/Pipeline/RasterFontLoader.h>
 #include <Furrovine++/Pipeline/TextureLoader.h>
@@ -29,6 +30,7 @@ private:
 	GraphicsDevice graphics;
 	IWindowServiceTracker windowservice;
 	IGraphicsDeviceServiceTracker graphicsservice;
+	ptr<NymphBatch> batch;
 	
 public:
 	Snaku( ) : FurrovineGame( ),
@@ -39,7 +41,7 @@ public:
 	}
 
 	void Initialize( ) {
-	
+		batch = new NymphBatch( graphics );
 	}
 
 	void Loop( ) {
