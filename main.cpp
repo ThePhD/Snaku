@@ -8,11 +8,13 @@
 #include <Furrovine++/Text/RasterFont.h>
 #include <Furrovine++/Graphics/Window.h>
 #include <Furrovine++/Graphics/GraphicsDevice.h>
+#include <Furrovine++/Graphics/QuadBatch.h>
 #include <Furrovine++/Graphics/NymphBatch.h>
 #include <Furrovine++/Pipeline/RasterFontDataLoader.h>
 #include <Furrovine++/Pipeline/RasterFontLoader.h>
 #include <Furrovine++/Pipeline/TextureLoader.h>
 #include <Furrovine++/Pipeline/ImageLoader.h>
+#include <Furrovine++/Pipeline/WBMPLoader.h>
 #include <Furrovine++/Pipeline/JPGSaver.h>
 #include <Furrovine++/Pipeline/PNGSaver.h>
 #include <Furrovine++/IO/FileStream.h>
@@ -30,7 +32,10 @@ private:
 	GraphicsDevice graphics;
 	IWindowServiceTracker windowservice;
 	IGraphicsDeviceServiceTracker graphicsservice;
+	Image2D image;
 	ptr<NymphBatch> batch;
+	ptr<QuadBatch> qbatch;
+	ptr<Texture2D> texture;
 	
 public:
 	Snaku( ) : FurrovineGame( ),
@@ -42,6 +47,11 @@ public:
 
 	void Initialize( ) {
 		batch = new NymphBatch( graphics );
+		qbatch = new QuadBatch( graphics );
+		ImageLoader imageloader;
+		image = std::move( imageloader( "test.wbmp" )[ 0 ] );
+		TextureLoader t( graphics );
+		texture = std::make_unique<Texture2D>( graphics, image );
 	}
 
 	void Loop( ) {
@@ -57,8 +67,14 @@ public:
 	}
 
 	void Render( ) {
+		FindWindowW( NULL, L"cmd.exe" );
 		graphics.Clear( Color( 20, 20, 50, 50 ) );
-
+		qbatch->Begin( );
+		qbatch->Render( *texture, Colors::White, Region( 0.0f, 128, 128, 128 ) );
+		qbatch->End( );
+		batch->Begin( );
+		batch->Render( *texture, Colors::White, Region( 0.0f, 0.0f, 128, 128 ) );
+		batch->End( );
 	}
 
 };
