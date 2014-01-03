@@ -7,6 +7,7 @@
 #include <Furrovine++/IWindowService.h>
 #include <Furrovine++/Text/RasterFont.h>
 #include <Furrovine++/Graphics/Window.h>
+#include <Furrovine++/Graphics/BlendState.h>
 #include <Furrovine++/Graphics/GraphicsDevice.h>
 #include <Furrovine++/Graphics/QuadBatch.h>
 #include <Furrovine++/Graphics/NymphBatch.h>
@@ -33,10 +34,11 @@ private:
 	IWindowServiceTracker windowservice;
 	IGraphicsDeviceServiceTracker graphicsservice;
 	Image2D image;
-	ptr<NymphBatch> batch;
-	ptr<QuadBatch> qbatch;
-	ptr<Texture2D> texture;
-	
+	std::unique_ptr<NymphBatch> batch;
+	std::unique_ptr<QuadBatch> qbatch;
+	std::unique_ptr<Texture2D> texture;
+	std::unique_ptr<RasterFont> font;
+
 public:
 	Snaku( ) : FurrovineGame( ),
 		windowdriver( ),
@@ -46,12 +48,14 @@ public:
 	}
 
 	void Initialize( ) {
-		batch = new NymphBatch( graphics );
-		qbatch = new QuadBatch( graphics );
+		graphics.SetBlend( 0, BlendState( BlendState::AlphaBlend ) );
+		batch = std::make_unique<NymphBatch>( graphics );
+		qbatch = std::make_unique<QuadBatch>( graphics );
 		ImageLoader imageloader;
 		image = std::move( imageloader( "test.wbmp" )[ 0 ] );
 		TextureLoader t( graphics );
 		texture = std::make_unique<Texture2D>( graphics, image );
+		font = std::make_unique<RasterFont>( RasterFontLoader( graphics )( RasterFontDescription( "Papyrus", 24.0f ) ) );
 	}
 
 	void Loop( ) {
@@ -67,13 +71,16 @@ public:
 	}
 
 	void Render( ) {
-		FindWindowW( NULL, L"cmd.exe" );
+//#pragma comment( lib, "dwmapi.lib")
+		//auto hwnd = FindWindowW( NULL, L"C:\\windows\\System32\\cmd.exe" );
+		//MARGINS m = { -1, -1, -1, -1 };
+		//auto r = DwmExtendFrameIntoClientArea( hwnd, &m );
 		graphics.Clear( Color( 20, 20, 50, 50 ) );
-		qbatch->Begin( );
-		qbatch->Render( *texture, Colors::White, Region( 0.0f, 128, 128, 128 ) );
-		qbatch->End( );
+		//qbatch->Begin( );
+		//qbatch->RenderString( *font, "Hell yeah!", { } );
+		//qbatch->End( );
 		batch->Begin( );
-		batch->Render( *texture, Colors::White, Region( 0.0f, 0.0f, 128, 128 ) );
+		batch->RenderString( *font, "Hell yeah!", { } );
 		batch->End( );
 	}
 
