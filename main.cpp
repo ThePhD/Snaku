@@ -19,6 +19,7 @@
 #include <Furrovine++/Pipeline/JPGSaver.h>
 #include <Furrovine++/Pipeline/PNGSaver.h>
 #include <Furrovine++/IO/FileStream.h>
+#include <Furrovine++/Format.h>
 
 using namespace Furrovine;
 using namespace Furrovine::IO;
@@ -34,7 +35,6 @@ private:
 	IWindowServiceTracker windowservice;
 	IGraphicsDeviceServiceTracker graphicsservice;
 	Image2D image;
-	std::unique_ptr<NymphBatch> batch;
 	std::unique_ptr<QuadBatch> qbatch;
 	std::unique_ptr<Texture2D> texture;
 	std::unique_ptr<RasterFont> font;
@@ -48,8 +48,7 @@ public:
 	}
 
 	void Initialize( ) {
-		graphics.SetBlend( 0, BlendState( BlendState::AlphaBlend ) );
-		batch = std::make_unique<NymphBatch>( graphics );
+		graphics.SetBlend( BlendState( BlendState::AlphaBlend ) );
 		qbatch = std::make_unique<QuadBatch>( graphics );
 		ImageLoader imageloader;
 		image = std::move( imageloader( "test.wbmp" )[ 0 ] );
@@ -71,17 +70,10 @@ public:
 	}
 
 	void Render( ) {
-//#pragma comment( lib, "dwmapi.lib")
-		//auto hwnd = FindWindowW( NULL, L"C:\\windows\\System32\\cmd.exe" );
-		//MARGINS m = { -1, -1, -1, -1 };
-		//auto r = DwmExtendFrameIntoClientArea( hwnd, &m );
-		graphics.Clear( Color( 20, 20, 50, 50 ) );
-		//qbatch->Begin( );
-		//qbatch->RenderString( *font, "Hell yeah!", { } );
-		//qbatch->End( );
-		batch->Begin( );
-		batch->RenderString( *font, "Hell yeah!", { } );
-		batch->End( );
+		graphics.Clear( Color( 96, 96, 128, 128 ) );
+		qbatch->Begin( );
+		qbatch->RenderString( *font, "Hell yeah!", { } );
+		qbatch->End( );
 	}
 
 };
