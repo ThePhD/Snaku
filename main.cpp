@@ -21,6 +21,8 @@
 #include <Furrovine++/IO/FileStream.h>
 #include <Furrovine++/Format.h>
 
+#include <iostream>
+
 using namespace Furrovine;
 using namespace Furrovine::IO;
 using namespace Furrovine::Graphics;
@@ -38,6 +40,7 @@ private:
 	std::unique_ptr<QuadBatch> qbatch;
 	std::unique_ptr<Texture2D> texture;
 	std::unique_ptr<RasterFont> font;
+	MessageQueue messages;
 
 public:
 	Snaku( ) : FurrovineGame( ),
@@ -58,9 +61,20 @@ public:
 	}
 
 	void Loop( ) {
-		WindowMessage message;
-		while ( windowdriver.NextMessage( window, message ) ) {
-
+		optional<MessageData> opmessage;
+		windowdriver.Push( window, messages );
+		while ( ( opmessage = messages.pop( ) ) ) {
+			MessageData& message = opmessage.value();
+			switch ( message.header.id ) {
+			case MessageId::Mouse:
+				
+				break;
+			case MessageId::Keyboard:
+				break;
+			case MessageId::None:
+			default:
+				break;
+			}
 		}
 		FurrovineGame::Loop( );
 	}
