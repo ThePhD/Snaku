@@ -48,16 +48,13 @@ private:
 public:
 
 	Snaku( ) : FurrovineGame( ),
-		windowdriver( ),
-		window( windowdriver, WindowDescription( "~ Snaku ~", WindowStyles::BorderlessTransparent ) ) {
+	windowdriver( ),
+	window( windowdriver, WindowDescription( "~ Snaku ~", WindowStyles::BorderlessTransparent ) ),
+	graphics( window ), graphics2d( graphics ) {
 		WindowService = window;
 		GraphicsService = graphics;
 		Graphics2DService = graphics2d;
-	}
 
-protected:
-
-	void Initialize( ) {
 		graphics.SetBlend( BlendState( BlendState::AlphaBlend ) );
 		ImageLoader imageloader;
 		image = std::move( imageloader( "test.wbmp" )[ 0 ] );
@@ -69,6 +66,8 @@ protected:
 		graphics.Clear( Colors::Black );
 		window.Show( );
 	}
+
+protected:
 
 	void Loop( ) {
 		optional<MessageData> opmessage;
@@ -94,13 +93,8 @@ protected:
 	}
 
 	void Render( ) {
-		graphics2d.End( );
 		graphics.Clear( Color( 96, 96, 128, 128 ) );
-		graphics2d.Begin( );
-		graphics2d.Clear( Colors::Transparent );
-		graphics2d.End( );
-		graphics2d.Begin( );
-		graphics2d.RenderText( *font, L"Woofℒ!" );
+		graphics2d.RenderText( *font, L" ♡ Woof ♡" );
 		qbatch->Begin( );
 		qbatch->RenderString( *rasterfont, "Hell yeah!", { 0, 100 } );
 		qbatch->End( );
