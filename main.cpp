@@ -1,4 +1,4 @@
-#define FURROVINEDEBUG
+﻿#define FURROVINEDEBUG
 #define FURROVINEDLL
 
 #include <Furrovine++/FurrovineGame.h>
@@ -21,6 +21,7 @@
 #include <Furrovine++/Pipeline/PNGSaver.h>
 #include <Furrovine++/IO/FileStream.h>
 #include <Furrovine++/Format.h>
+#include <Furrovine++/Text/TextResources.h>
 
 #include <iostream>
 
@@ -36,6 +37,7 @@ private:
 	Window window;
 	GraphicsDevice graphics;
 	GraphicsDevice2D graphics2d;
+	TextResources textresources;
 	Image2D image;
 	std::unique_ptr<QuadBatch> qbatch;
 	std::unique_ptr<Texture2D> texture;
@@ -61,10 +63,10 @@ protected:
 		image = std::move( imageloader( "test.wbmp" )[ 0 ] );
 		make_unique( texture, graphics, image );
 		make_unique( rasterfont, RasterFontLoader( graphics )( RasterFontDescription( "Consolas", 30.0f ) ) );
-		make_unique( font, FontDescription{ "Arial", 24.0f } );
+		make_unique( font, textresources, FontDescription{ "Arial", 24.0f } );
 		make_unique( qbatch, graphics );
 
-		graphics.Clear( Color( 96, 96, 128, 128 ) );
+		graphics.Clear( Colors::Black );
 		window.Show( );
 	}
 
@@ -92,11 +94,15 @@ protected:
 	}
 
 	void Render( ) {
+		graphics2d.End( );
 		graphics.Clear( Color( 96, 96, 128, 128 ) );
-		graphics2d.Clear( Colors::AlizarinCrimson );
-		graphics2d.RenderText( *font, "Woof woof!" );
+		graphics2d.Begin( );
+		graphics2d.Clear( Colors::Transparent );
+		graphics2d.End( );
+		graphics2d.Begin( );
+		graphics2d.RenderText( *font, L"Woofℒ!" );
 		qbatch->Begin( );
-		qbatch->RenderString( *rasterfont, "Hell yeah!", { 0, 50 } );
+		qbatch->RenderString( *rasterfont, "Hell yeah!", { 0, 100 } );
 		qbatch->End( );
 	}
 
