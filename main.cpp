@@ -9,6 +9,7 @@
 #include <Furrovine++/Graphics/Window.h>
 #include <Furrovine++/Graphics/BlendState.h>
 #include <Furrovine++/Graphics/GraphicsDevice.h>
+#include <Furrovine++/Graphics/GraphicsDevice2D.h>
 #include <Furrovine++/Graphics/QuadBatch.h>
 #include <Furrovine++/Graphics/NymphBatch.h>
 #include <Furrovine++/Pipeline/RasterFontDataLoader.h>
@@ -34,30 +35,37 @@ private:
 	WindowDriver windowdriver;
 	Window window;
 	GraphicsDevice graphics;
-	IWindowServiceTracker windowservice;
-	IGraphicsDeviceServiceTracker graphicsservice;
+	GraphicsDevice2D graphics2d;
 	Image2D image;
 	std::unique_ptr<QuadBatch> qbatch;
 	std::unique_ptr<Texture2D> texture;
-	std::unique_ptr<RasterFont> font;
+	std::unique_ptr<RasterFont> rasterfont;
+	std::unique_ptr<Font> font;
 	MessageQueue messages;
 
 public:
+
 	Snaku( ) : FurrovineGame( ),
 		windowdriver( ),
-		window( windowdriver, WindowDescription( "~ Snaku ~", WindowStyles::BorderlessTransparent ) ),
-		windowservice( Services, window ), graphicsservice( Services, graphics ) {
-		window.Show( );
+		window( windowdriver, WindowDescription( "~ Snaku ~", WindowStyles::BorderlessTransparent ) ) {
+		WindowService = window;
+		GraphicsService = graphics;
+		Graphics2DService = graphics2d;
 	}
+
+protected:
 
 	void Initialize( ) {
 		graphics.SetBlend( BlendState( BlendState::AlphaBlend ) );
-		qbatch = std::make_unique<QuadBatch>( graphics );
 		ImageLoader imageloader;
 		image = std::move( imageloader( "test.wbmp" )[ 0 ] );
-		TextureLoader t( graphics );
-		texture = std::make_unique<Texture2D>( graphics, image );
-		font = std::make_unique<RasterFont>( RasterFontLoader( graphics )( RasterFontDescription( "Papyrus", 24.0f ) ) );
+		make_unique( texture, graphics, image );
+		make_unique( rasterfont, RasterFontLoader( graphics )( RasterFontDescription( "Consolas", 30.0f ) ) );
+		make_unique( font, FontDescription{ "Arial", 24.0f } );
+		make_unique( qbatch, graphics );
+
+		graphics.Clear( Color( 96, 96, 128, 128 ) );
+		window.Show( );
 	}
 
 	void Loop( ) {
@@ -85,8 +93,10 @@ public:
 
 	void Render( ) {
 		graphics.Clear( Color( 96, 96, 128, 128 ) );
+		graphics2d.Clear( Colors::AlizarinCrimson );
+		graphics2d.RenderText( *font, "Woof woof!" );
 		qbatch->Begin( );
-		qbatch->RenderString( *font, "Hell yeah!", { } );
+		qbatch->RenderString( *rasterfont, "Hell yeah!", { 0, 50 } );
 		qbatch->End( );
 	}
 
