@@ -9,11 +9,14 @@
 #include <Furrovine++/Graphics/BlendState.h>
 #include <Furrovine++/Graphics/NymphBatch.h>
 #include <Furrovine++/Text/TextResources.h>
+#include <Furrovine++/Pipeline/ImageLoader.h>
+#include <Furrovine++/Pipeline/TextureLoader.h>
 
 using namespace Furrovine;
 using namespace Furrovine::IO;
 using namespace Furrovine::Graphics;
 using namespace Furrovine::Text;
+using namespace Furrovine::Pipeline;
 
 class Snaku : public FurrovineGame {
 private:
@@ -27,6 +30,8 @@ private:
 	StateStack states;
 	PartyState partystate;
 	PauseState pausestate;
+	Texture2D texture;
+	Image2D image;
 
 public:
 
@@ -43,7 +48,8 @@ public:
 		Graphics2DService = graphics2d;
 		states.Push( &partystate );
 		graphics.SetBlend( BlendState( BlendState::AlphaBlend ) );
-		
+		image = ImageLoader( )( load_single, "test.wbmp" );
+		texture = TextureLoader( graphics )( image );
 		window.Show( );
 	}
 
@@ -74,6 +80,7 @@ protected:
 
 	void Render( ) {
 		graphics.Clear( Color( 96, 96, 128, 128 ) );
+		graphics.RenderImage( image );
 		states.Render( );
 	}
 
