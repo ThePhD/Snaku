@@ -47,7 +47,6 @@ public:
 		GraphicsService = graphics;
 		Graphics2DService = graphics2d;
 		states.Push( &partystate );
-		graphics.SetBlend( BlendState( BlendState::AlphaBlend ) );
 		image = ImageLoader( )( load_single, "test.wbmp" );
 		texture = TextureLoader( graphics )( image );
 		window.Show( );

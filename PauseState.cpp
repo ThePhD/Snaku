@@ -4,7 +4,7 @@
 void PauseState::Render( ) {
 	Fur::Viewport viewport = graphics->GetViewport( );
 	nymphbatch->Begin( );
-	nymphbatch->RenderString( font, "P a u s e", viewport.center() );
+	nymphbatch->RenderString( font, "P a u s e", viewport.Center() );
 	nymphbatch->End( );
 }
 
