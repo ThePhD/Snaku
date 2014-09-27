@@ -5,15 +5,21 @@
 
 class StateStack {
 private:
-	std::vector<State*> states;
+	std::vector<std::reference_wrapper<State>> states;
 
 public:
 
 	StateStack( );
 
-	void Push( State* state );
+	void push( State& state );
 
-	void Pop( );
+	State& top( );
+
+	void pop( );
+
+	bool is_empty( ) const;
+
+	bool contains( const State& state ) const;
 
 	void Update( );
 

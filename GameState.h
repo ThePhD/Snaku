@@ -1,16 +1,16 @@
 #pragma once
 
-#include "types.h"
-#include "State.h"
 #include "Everything.h"
 
-class PauseState : public State {
+class GameState : public State {
 private:
 	std::reference_wrapper<Everything> everythingref;
-
+	
 public:
 
-	PauseState( Everything& everything );
+	GameState( Everything& everything );
+
+	virtual void Update( ) override;
 
 	virtual void Render( ) override;
 

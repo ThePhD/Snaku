@@ -72,7 +72,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="PartyState.cpp" />
+    <ClCompile Include="GameState.cpp" />
     <ClCompile Include="PauseState.cpp" />
     <ClCompile Include="State.cpp" />
     <ClCompile Include="StateStack.cpp" />
@@ -86,8 +86,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Everything.h" />
     <ClInclude Include="PauseState.h" />
-    <ClInclude Include="PartyState.h" />
+    <ClInclude Include="GameState.h" />
     <ClInclude Include="State.h" />
     <ClInclude Include="StateStack.h" />
     <ClInclude Include="types.h" />
