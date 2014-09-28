@@ -1,6 +1,5 @@
 #pragma once
 
-#include "types.h"
 #include "StateStack.h"
 #include <Furrovine++/ResourceCache.h>
 #include <Furrovine++/WindowDriver.h>

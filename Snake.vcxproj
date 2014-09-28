@@ -76,6 +76,7 @@
     <ClCompile Include="PauseState.cpp" />
     <ClCompile Include="State.cpp" />
     <ClCompile Include="StateStack.cpp" />
+    <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Furrovine\Furrovine++\Furrovine++.Unicode.vcxproj">
@@ -87,11 +88,23 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Everything.h" />
+    <ClInclude Include="Hex.h" />
+    <ClInclude Include="HexCoord.h" />
+    <ClInclude Include="HexGrid.h" />
+    <ClInclude Include="THex.h" />
+    <ClInclude Include="HexTop.h" />
+    <ClInclude Include="THexAxial.h" />
+    <ClInclude Include="THexCoord.h" />
+    <ClInclude Include="THexCube.h" />
     <ClInclude Include="PauseState.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="State.h" />
     <ClInclude Include="StateStack.h" />
-    <ClInclude Include="types.h" />
+    <ClInclude Include="THexGrid.h" />
+    <ClInclude Include="World.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="HexTree.msg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

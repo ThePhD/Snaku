@@ -4,8 +4,7 @@
 using namespace Furrovine;
 using namespace Furrovine::Graphics;
 
-void GameState::Render( )
-{
+void GameState::Render( ) {
 	Everything& everything = everythingref;
 	ResourceCache<String>& cache = everything.cache;
 	GraphicsDevice& graphics = everything.graphics;
@@ -16,12 +15,10 @@ void GameState::Render( )
 	nymph.End( );
 }
 
-void GameState::Update( )
-{
+void GameState::Update( ) {
 
 }
 
-GameState::GameState( Everything& everything ) : everythingref( everything )
-{
+GameState::GameState( Everything& everything ) : everythingref( everything ) {
 
 }

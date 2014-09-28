@@ -1,6 +1,5 @@
 #pragma once
 
-#include "types.h"
 #include "State.h"
 #include "Everything.h"
 

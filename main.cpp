@@ -1,5 +1,4 @@
-﻿#include "types.h"
-#include "StateStack.h"
+﻿#include "StateStack.h"
 #include "GameState.h"
 #include "PauseState.h"
 #include "Everything.h"
