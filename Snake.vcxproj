@@ -100,7 +100,6 @@
     <ClInclude Include="GameState.h" />
     <ClInclude Include="State.h" />
     <ClInclude Include="StateStack.h" />
-    <ClInclude Include="THexGrid.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>

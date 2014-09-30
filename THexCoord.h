@@ -1,21 +1,157 @@
 #pragma once
 
-#include "THexAxial.h"
-#include "THexCube.h"
+#include "HexTop.h"
+#include <Furrovine++/TVector2.h>
+#include <Furrovine++/TVector3.h>
 
 template <typename T>
-THexAxial<T> to_hexaxial( const THexCube<T>& cube ) {
-	return THexAxial<T>( cube.x, cube.z );
+struct THexAxial;
+
+template <typename T>
+struct THexCube;
+
+template <typename T>
+struct THexAxial : public Furrovine::TVector2<T> {
+	typedef Furrovine::TVector2<T> base_t;
+
+	template <typename... Tn>
+	THexAxial( Tn&&... argn ) : Furrovine::TVector2<T>( std::forward<Tn>( argn )... ) {
+
+	}
+
+	THexAxial( std::initializer_list<T> l ) : Furrovine::TVector3<T>( std::move( l ) ) {
+
+	}
+
+	template <typename Arith, HexTop top>
+	THexAxial( Furrovine::TVector2<T> pixel, Arith size, std::integral_constant<HexTop, top> = default_hextop_constant ) {
+		double q, r;
+		switch ( top ) {
+		case HexTop::Pointy:
+			q = ( 1.0 / 3.0 * Furrovine::three_root_two<T>( ) * pixel.x - 1.0 / 3.0 * pixel.y ) / size;
+			r = 2.0 / 3.0 * pixel.y / size;
+			break;
+		case HexTop::Flat:
+		default:
+			q = 2.0 / 3.0 * pixel.x / size;
+			r = ( 1.0 / 3.0 * Furrovine::three_root_two<T>( ) * pixel.y - 1.0 / 3.0 * pixel.x ) / size;
+			break;
+		}
+		x = static_cast<T>( q );
+		y = static_cast<T>( r );
+	}
+
+	THexAxial( const THexCube<T>& );
+
+	T s( ) const {
+		return -x - y;
+	}
+
+	template <HexTop top = default_hextop>
+	Furrovine::TVector2<T> to_pixel( double size ) {
+		double px, py;
+		switch ( top ) {
+		case HexTop::Pointy:
+			px = size * Furrovine::three_root_two<T>( ) * ( x + y / 2.0 );
+			py = size * 3.0 / 2.0 * y;
+			break;
+		case HexTop::Flat:
+		default:
+			px = size * 3.0 / 2.0 * x;
+			py = size * Furrovine::three_root_two<T>( ) * ( y + x / 2.0 );
+			break;
+		}
+		return{ static_cast<T>( px ), static_cast<T>( py ) };
+	}
+
+	bool operator == ( const THexAxial<T>& right ) const {
+		return static_cast<const base_t&>( *this ) == static_cast<const base_t&>( right );
+	}
+
+	bool operator != ( const THexAxial<T>& right ) {
+		return static_cast<const base_t&>( *this ) == static_cast<const base_t&>( right );
+	}
+};
+
+template <typename T>
+struct THexCube : public Furrovine::TVector3<T> {
+	typedef TVector3<T> base_t;
+
+	template <typename... Tn>
+	THexCube( Tn&&... argn ) : Furrovine::TVector3<T>( std::forward<Tn>( argn )... ) {
+
+	}
+
+	THexCube( std::initializer_list<T> l ) : Furrovine::TVector3<T>( std::move( l ) ) {
+
+	}
+
+	THexCube( const THexAxial<T>& );
+
+	template <typename Arith, HexTop top>
+	THexCube( Furrovine::TVector2<T> p, Arith size, std::integral_constant<HexTop, top> = default_hextop_constant ) {
+		double q, r;
+		switch ( top ) {
+		case HexTop::Pointy:
+			q = ( 1.0 / 3.0 * Furrovine::three_root_two<T>( ) * p.x - 1.0 / 3.0 * p.Y ) / size;
+			r = 2.0 / 3.0 * p.y / size;
+			break;
+		case HexTop::Flat:
+		default:
+			q = 2.0 / 3.0 * p.x / size;
+			r = ( 1.0 / 3.0 * Furrovine::three_root_two<T>( ) * p.y - 1.0 / 3.0 * p.X ) / size;
+			break;
+		}
+		x = static_cast<T>( q );
+		y = static_cast<T>( r );
+		z = static_cast<T>( -q - r );
+	}
+
+	T sum( ) const {
+		return x + y + z;
+	}
+
+	template <HexTop top = default_hextop>
+	Furrovine::TVector2<T> to_pixel( double size ) {
+		double x, y;
+		switch ( top ) {
+		case HexTop.Pointy:
+			x = size * Furrovine::three_root_two( ) * ( x + z / 2.0 );
+			y = size * 3.0 / 2.0 * z;
+			break;
+		case HexTop.Flat:
+		default:
+			x = size * 3.0 / 2.0 * x;
+			y = size * Furrovine::three_root_two( ) * ( z + x / 2.0 );
+			break;
+		}
+		return Furrovine::TVector2<T>( static_cast<T>( x ), static_cast<T>( y ) );
+	}
+
+	bool operator == ( const THexCube& right ) const {
+		return static_cast<const base_t&>( left ) == static_cast<const base_t&>( right );
+	}
+
+	bool operator != ( const THexCube& right ) const {
+		return static_cast<const base_t&>( left ) != static_cast<const base_t&>( right );
+	}
+};
+
+template <typename T>
+THexAxial<T>::THexAxial( const THexCube<T>& cube ) 
+: TVector2<T>( cube.x, cube.z ) {
+	
 }
 
 template <typename T>
-THexCube<T> to_hexcube( const THexAxial<T>& axial ) {
-	return THexCube<T>( axial.x, -axial.x - axial.y, axial.y );
+THexCube<T>::THexCube( const THexAxial<T>& axial )
+: TVector3<T>(axial.x, -axial.x - axial.y, axial.y) {
+	
 }
 
 template <HexTop top = default_hextop, typename T>
 auto to_pixel( T&& coord, double size ) {
-	return coord.pixel( size );
+	return coord.to_pixel( size );
 }
 
 template <typename T>
@@ -40,5 +176,5 @@ THexCube<T> round( const THexCube<T>& cube ) {
 
 template <typename T>
 THexAxial<T> round( const THexAxial<T>& ax ) {
-	return to_hexaxial( round( to_hexcube( ax ) ) );
+	return THexAxial<T>( round( HexCube( ax ) ) );
 }

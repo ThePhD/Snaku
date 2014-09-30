@@ -1,7 +1,7 @@
 ﻿#include "StateStack.h"
 #include "GameState.h"
 #include "PauseState.h"
-#include "Everything.h"
+#include "HexGrid.h"
 
 #include <Furrovine++/FurrovineGame.h>
 #include <Furrovine++/ResourceCache.h>
@@ -29,13 +29,15 @@ private:
 	GraphicsDevice graphics;
 	GraphicsDevice2D graphics2d;
 	TextDevice textdevice;
-	NymphBatch batch;
+	NymphBatch nymph;
 	ResourceCache<String> cache;
 	StateStack states;
 	Everything everything;
 	GameState gamestate;
 	PauseState pausestate;
 	MessageQueue messages;
+	HexGrid grid;
+	Vector2 mouse;
 
 public:
 
@@ -45,11 +47,12 @@ public:
 	graphics( window ),
 	textdevice( window ),
 	graphics2d( graphics ),
-	batch( graphics ),
+	nymph( graphics ),
 	cache(),
-	everything( { windowdriver, window, graphics, textdevice, batch, cache, states } ),
+	everything( { windowdriver, window, graphics, textdevice, nymph, cache, states } ),
 	gamestate( everything ),
-	pausestate( everything ) {
+	pausestate( everything ),
+	grid( 1 ) {
 		WindowService = window;
 		GraphicsService = graphics;
 		Graphics2DService = graphics2d;
@@ -68,9 +71,10 @@ protected:
 		while ( ( opmessagedata = messages.pop( ) ) ) {
 			MessageData& messagedata = opmessagedata.value();
 			switch ( messagedata.header.id ) {
-			case MessageId::Mouse:
-				
-				break;
+			case MessageId::Mouse: {
+				Message<MouseEvent>& message = messagedata.as<MouseEvent>( );
+				mouse = message.item.Relative;
+				} break;
 			case MessageId::Keyboard: { 
 				Message<KeyboardEvent>& message = messagedata.as<KeyboardEvent>( );
 				if ( message.item.Key == Key::Enter ) {
@@ -96,6 +100,11 @@ protected:
 
 	void Render( ) {
 		graphics.Clear( Color( 96, 96, 128, 128 ) );
+		nymph.Begin( );
+		grid.Render( { 200, 200 }, mouse, nymph );
+		nymph.RenderGradient( Region( mouse - 3, Size2( 6, 6 ) ), Color::Blue );
+		nymph.End( );
+
 		states.Render( );
 	}
 

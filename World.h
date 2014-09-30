@@ -9,4 +9,6 @@ struct World {
 
 	World( );
 
+	void Render( );
+
 };

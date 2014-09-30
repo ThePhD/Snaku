@@ -7,5 +7,5 @@ enum class HexTop {
 	Pointy
 };
 
-const auto default_hextop = HexTop::Pointy;
+const auto default_hextop = HexTop::Flat;
 const std::integral_constant<HexTop, default_hextop> default_hextop_constant = {};
