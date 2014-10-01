@@ -71,6 +71,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="HexGrid.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="PauseState.cpp" />
@@ -90,12 +91,12 @@
     <ClInclude Include="Everything.h" />
     <ClInclude Include="Hex.h" />
     <ClInclude Include="HexCoord.h" />
+    <ClInclude Include="HexDirection.h" />
     <ClInclude Include="HexGrid.h" />
     <ClInclude Include="THex.h" />
     <ClInclude Include="HexTop.h" />
     <ClInclude Include="THexAxial.h" />
     <ClInclude Include="THexCoord.h" />
-    <ClInclude Include="THexCube.h" />
     <ClInclude Include="PauseState.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="State.h" />

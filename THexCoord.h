@@ -15,11 +15,11 @@ struct THexAxial : public Furrovine::TVector2<T> {
 	typedef Furrovine::TVector2<T> base_t;
 
 	template <typename... Tn>
-	THexAxial( Tn&&... argn ) : Furrovine::TVector2<T>( std::forward<Tn>( argn )... ) {
+	THexAxial( Tn&&... argn ) : base_t( std::forward<Tn>( argn )... ) {
 
 	}
 
-	THexAxial( std::initializer_list<T> l ) : Furrovine::TVector3<T>( std::move( l ) ) {
+	THexAxial( std::initializer_list<T> l ) : base_t( std::move( l ) ) {
 
 	}
 
@@ -42,6 +42,8 @@ struct THexAxial : public Furrovine::TVector2<T> {
 	}
 
 	THexAxial( const THexCube<T>& );
+
+	THexAxial( THexCube<T>&& );
 
 	T s( ) const {
 		return -x - y;
@@ -75,18 +77,15 @@ struct THexAxial : public Furrovine::TVector2<T> {
 
 template <typename T>
 struct THexCube : public Furrovine::TVector3<T> {
-	typedef TVector3<T> base_t;
+	typedef Furrovine::TVector3<T> base_t;
 
 	template <typename... Tn>
-	THexCube( Tn&&... argn ) : Furrovine::TVector3<T>( std::forward<Tn>( argn )... ) {
-
-	}
-
-	THexCube( std::initializer_list<T> l ) : Furrovine::TVector3<T>( std::move( l ) ) {
+	THexCube( Tn&&... argn ) : base_t( std::forward<Tn>( argn )... ) {
 
 	}
 
 	THexCube( const THexAxial<T>& );
+	THexCube( THexAxial<T>&& );
 
 	template <typename Arith, HexTop top>
 	THexCube( Furrovine::TVector2<T> p, Arith size, std::integral_constant<HexTop, top> = default_hextop_constant ) {
@@ -138,15 +137,27 @@ struct THexCube : public Furrovine::TVector3<T> {
 };
 
 template <typename T>
-THexAxial<T>::THexAxial( const THexCube<T>& cube ) 
-: TVector2<T>( cube.x, cube.z ) {
-	
+THexAxial<T>::THexAxial( const THexCube<T>& cube )
+	: base_t( cube.x, cube.z ) {
+
+}
+
+template <typename T>
+THexAxial<T>::THexAxial( THexCube<T>&& cube )
+	: base_t( cube.x, cube.z ) {
+
 }
 
 template <typename T>
 THexCube<T>::THexCube( const THexAxial<T>& axial )
-: TVector3<T>(axial.x, -axial.x - axial.y, axial.y) {
-	
+	: base_t( axial.x, -axial.x - axial.y, axial.y ) {
+
+}
+
+template <typename T>
+THexCube<T>::THexCube( THexAxial<T>&& axial )
+	: base_t( axial.x, -axial.x - axial.y, axial.y ) {
+
 }
 
 template <HexTop top = default_hextop, typename T>

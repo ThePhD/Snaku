@@ -52,7 +52,7 @@ public:
 	everything( { windowdriver, window, graphics, textdevice, nymph, cache, states } ),
 	gamestate( everything ),
 	pausestate( everything ),
-	grid( 1 ) {
+	grid( 2 ) {
 		WindowService = window;
 		GraphicsService = graphics;
 		Graphics2DService = graphics2d;
@@ -102,7 +102,7 @@ protected:
 		graphics.Clear( Color( 96, 96, 128, 128 ) );
 		nymph.Begin( );
 		grid.Render( { 200, 200 }, mouse, nymph );
-		nymph.RenderGradient( Region( mouse - 3, Size2( 6, 6 ) ), Color::Blue );
+		nymph.RenderGradient( Region( mouse - 3.0f, Size2( 6.0f, 6.0f ) ), Color::Blue );
 		nymph.End( );
 
 		states.Render( );

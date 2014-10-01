@@ -4,9 +4,12 @@
 
 template <typename T>
 struct THex {
-	const static Furrovine::TVector2<std::ptrdiff_t> Neighbors[ 6 ];
 	THexAxial<T> axial;
 	
+	THex( ) : axial( ) {
+
+	}
+
 	THex( const THexCube<T>& cube ) : axial( cube ) {
 		
 	}
@@ -21,8 +24,4 @@ struct THex {
 	}
 };
 
-template <typename T>
-const Furrovine::TVector2<std::ptrdiff_t> THex<T>::Neighbors[ 6 ] = {
-		{ +1, 0 }, { +1, -1 }, { 0, -1 },
-		{ -1, 0 }, { -1, +1 }, { 0, +1 }
-};
+
