@@ -34,6 +34,10 @@ public:
 
 	void Render( Furrovine::Vector2 offset, Furrovine::Vector2 mouse, Furrovine::Graphics::NymphBatch& batch );
 
-	static std::ptrdiff_t Count( std::ptrdiff_t r );
+	static std::ptrdiff_t hex_count( std::ptrdiff_t r );
+
+	static Furrovine::bounds<2> storage_bounds( std::ptrdiff_t r );
+
+	static std::size_t storage_size( std::ptrdiff_t r );
 
 };

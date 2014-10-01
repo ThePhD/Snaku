@@ -52,7 +52,7 @@ public:
 	everything( { windowdriver, window, graphics, textdevice, nymph, cache, states } ),
 	gamestate( everything ),
 	pausestate( everything ),
-	grid( 2 ) {
+	grid( 3 ) {
 		WindowService = window;
 		GraphicsService = graphics;
 		Graphics2DService = graphics2d;

@@ -1,12 +1,22 @@
 #include "HexGrid.h"
 
 const Furrovine::TVector2<std::ptrdiff_t> HexGrid::Neighbors[ 6 ] = {
-		{ +1, 0 }, { +1, -1 }, { 0, -1 },
-		{ -1, 0 }, { -1, +1 }, { 0, +1 }
+	{ +1, 0 }, { +1, -1 }, { 0, -1 },
+	{ -1, 0 }, { -1, +1 }, { 0, +1 }
 };
 
-std::ptrdiff_t HexGrid::Count( std::ptrdiff_t r ) {
+std::ptrdiff_t HexGrid::hex_count( std::ptrdiff_t r ) {
 	return 1 + ( 3 * r ) + ( 3 * r *r );
+}
+
+Furrovine::bounds<2> HexGrid::storage_bounds( std::ptrdiff_t r ) {
+	std::ptrdiff_t dim = r * 2 + 1;
+	return { dim, dim };
+}
+
+std::size_t HexGrid::storage_size( std::ptrdiff_t r ) {
+	std::ptrdiff_t dim = r * 2 + 1;
+	return dim * dim;
 }
 
 void HexGrid::Render( Furrovine::Vector2 offset, Furrovine::Vector2 mouse, Furrovine::Graphics::NymphBatch& batch ) {
@@ -66,8 +76,8 @@ Hex& HexGrid::operator[]( const THexAxial<std::ptrdiff_t>& ax ) {
 }
 
 HexGrid::HexGrid( std::ptrdiff_t r ) : radius( r ),
-hexes( Count( radius ) ),
-hexesview( hexes, { radius, radius } ),
+hexes( storage_size( radius ) ),
+hexesview( hexes, storage_bounds( radius ) ),
 shape( Furrovine::Graphics::Nymphgon::CreateNgon( 20, 6 ) ) {
 	HexCubez minimum{ -r, -r, -r };
 	HexCubez maximum{ r, r, r };
