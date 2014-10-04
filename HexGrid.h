@@ -75,7 +75,7 @@ struct hex_ring_iterator : std::iterator<std::forward_iterator_tag, THexAxial<T>
 	}
 
 	THexAxial<T> operator* ( ) const {
-		return THexAxial<T>( static_cast<T>( axial.q ), static_cast<T>( axial.r ) );
+		return THexAxial<T>( static_cast<T>( axial.x ), static_cast<T>( axial.y ) );
 	}
 
 	hex_ring_iterator& operator++ ( ) {
