@@ -22,6 +22,10 @@ struct THex {
 		return ( std::abs( axial.x - target.axial.Q ) + std::abs( axial.R - target.axial.R )
 				 + std::abs( axial.Q + axial.R - target.axial.Q - target.axial.R ) ) / 2.0;
 	}
+
+	THex neighbor( HexDirection hexdirection ) {
+		return THex<T>( axial.neighbor( hexdirection ) );
+	}
 };
 
 

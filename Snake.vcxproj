@@ -95,7 +95,6 @@
     <ClInclude Include="HexGrid.h" />
     <ClInclude Include="THex.h" />
     <ClInclude Include="HexTop.h" />
-    <ClInclude Include="THexAxial.h" />
     <ClInclude Include="THexCoord.h" />
     <ClInclude Include="PauseState.h" />
     <ClInclude Include="GameState.h" />

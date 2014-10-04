@@ -5,54 +5,34 @@ const Furrovine::TVector2<std::ptrdiff_t> HexGrid::Neighbors[ 6 ] = {
 	{ -1, 0 }, { -1, +1 }, { 0, +1 }
 };
 
-std::ptrdiff_t HexGrid::hex_count( std::ptrdiff_t r ) {
-	return 1 + ( 3 * r ) + ( 3 * r *r );
-}
-
-Furrovine::bounds<2> HexGrid::storage_bounds( std::ptrdiff_t r ) {
-	std::ptrdiff_t dim = r * 2 + 1;
-	return { dim, dim };
-}
-
-std::size_t HexGrid::storage_size( std::ptrdiff_t r ) {
-	std::ptrdiff_t dim = r * 2 + 1;
-	return dim * dim;
-}
+#include <unordered_set>
 
 void HexGrid::Render( Furrovine::Vector2 offset, Furrovine::Vector2 mouse, Furrovine::Graphics::NymphBatch& batch ) {
 	using namespace Furrovine;
 	Furrovine::Vector2 v = mouse - offset;
-	//v.y = -v.y;
 	HexAxial hexmouse = round( HexAxial( v, 20.0f, default_hextop_constant ) );
 	std::vector<HexAxial> axials;
-	for ( Hex& ohex : hexes ) {
-		Hex& hex = ohex;
+	std::vector<HexAxial> axialsf;
+	std::unordered_set<const Hex*> addrs;
+	for ( const Hex& hex : *this ) {
+		axialsf.push_back( hex.axial );
+	}
+	
+	
+	int hexc = hex_count( radius );
+	for_each( [ & ] ( const Hex& ohex ) {
+		const Hex& hex = ohex;
 		Furrovine::Vector2 pixel = to_pixel( hex.axial, 20.0 );
 		Furrovine::Color color = Furrovine::Color::White;
 		if ( hex.axial == hexmouse )
 			color = Furrovine::Color::Red;
 		batch.RenderPolygon( shape, Furrovine::nullopt, pixel + offset, 0.0f, Furrovine::Vector2::One, Furrovine::Vector2::Zero, color );
 		axials.push_back( hex.axial );
-	}
-	axials.clear( );
-}
+		addrs.emplace( &hex );
+	} );
 
-template <typename TFx>
-void HexGrid::for_each( TFx&& fx, HexDirection start /*= HexDirection::Four */ ) {
-	for ( std::size_t k = 1; k <= radius; ++k ) {
-		std::reference_wrapper<Hex> h( ( *this )[ {0, 0} ] );
-		std::size_t kminus1 = k - 1;
-		for ( std::size_t s = 0; s < kminus1; ++s ) {
-			h = std::ref( Neighbor( h.get( ), start ) );
-		}
-		for ( std::size_t i = 0; i < 6; ++i ) {
-			for ( std::size_t j = 0; < k; ++j ) {
-				fx( h.get( ) );
-				// Rebind
-				h = std::ref( Neighbor( h.get( ), static_cast<HexDirection>( i ) ) );
-			}
-		}
-	}
+	bool test = axials == axialsf;
+	axials.clear( );
 }
 
 const Hex& HexGrid::Neighbor( const Hex& hex, HexDirection direction ) const {
@@ -61,7 +41,7 @@ const Hex& HexGrid::Neighbor( const Hex& hex, HexDirection direction ) const {
 
 Hex& HexGrid::Neighbor( const Hex& hex, HexDirection direction ) {
 	THexAxial<std::ptrdiff_t> ax = hex.axial;
-	ax += Neighbors[ static_cast<std::size_t>( direction ) ];
+	ax = ax.neighbor( direction );
 	return ( *this )[ ax ];
 }
 
@@ -76,11 +56,11 @@ Hex& HexGrid::operator[]( const THexAxial<std::ptrdiff_t>& ax ) {
 }
 
 HexGrid::HexGrid( std::ptrdiff_t r ) : radius( r ),
-hexes( storage_size( radius ) ),
-hexesview( hexes, storage_bounds( radius ) ),
+hexes( hex_storage_size( radius ) ),
+hexesview( hexes, hex_storage_bounds( radius ) ),
 shape( Furrovine::Graphics::Nymphgon::CreateNgon( 20, 6 ) ) {
-	HexCubez minimum{ -r, -r, -r };
-	HexCubez maximum{ r, r, r };
+	HexCubez minimum{ -radius, -radius, -radius };
+	HexCubez maximum{ radius, radius, radius };
 	for ( std::ptrdiff_t x = minimum.x; x <= maximum.x; ++x ) {
 		auto yfirst = std::max( minimum.y, -x - maximum.z );
 		auto ylast = std::min( maximum.y, -x - minimum.z );

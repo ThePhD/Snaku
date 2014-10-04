@@ -1,8 +1,10 @@
 #pragma once
 
 #include "HexTop.h"
-#include <Furrovine++/TVector2.h>
-#include <Furrovine++/TVector3.h>
+#include "HexDirection.h"
+#include <Furrovine++/bounds.h>
+#include <Furrovine++/Vector2.h>
+#include <Furrovine++/Vector3.h>
 
 template <typename T>
 struct THexAxial;
@@ -12,6 +14,7 @@ struct THexCube;
 
 template <typename T>
 struct THexAxial : public Furrovine::TVector2<T> {
+	const static Furrovine::Vector2z Neighbors[ 6 ];
 	typedef Furrovine::TVector2<T> base_t;
 
 	template <typename... Tn>
@@ -23,22 +26,22 @@ struct THexAxial : public Furrovine::TVector2<T> {
 
 	}
 
-	template <typename Arith, HexTop top>
-	THexAxial( Furrovine::TVector2<T> pixel, Arith size, std::integral_constant<HexTop, top> = default_hextop_constant ) {
-		double q, r;
+	template <typename Tv, typename Arith, HexTop top>
+	THexAxial( Furrovine::TVector2<Tv> pixel, Arith size, std::integral_constant<HexTop, top> = default_hextop_constant ) {
+		double px, py;
 		switch ( top ) {
 		case HexTop::Pointy:
-			q = ( 1.0 / 3.0 * Furrovine::three_root_two<T>( ) * pixel.x - 1.0 / 3.0 * pixel.y ) / size;
-			r = 2.0 / 3.0 * pixel.y / size;
+			px = ( 1.0 / 3.0 * Furrovine::three_root_two<T>( ) * pixel.x - 1.0 / 3.0 * pixel.y ) / size;
+			py = 2.0 / 3.0 * pixel.y / size;
 			break;
 		case HexTop::Flat:
 		default:
-			q = 2.0 / 3.0 * pixel.x / size;
-			r = ( 1.0 / 3.0 * Furrovine::three_root_two<T>( ) * pixel.y - 1.0 / 3.0 * pixel.x ) / size;
+			px = 2.0 / 3.0 * pixel.x / size;
+			py = ( 1.0 / 3.0 * Furrovine::three_root_two<T>( ) * pixel.y - 1.0 / 3.0 * pixel.x ) / size;
 			break;
 		}
-		x = static_cast<T>( q );
-		y = static_cast<T>( r );
+		this->x = static_cast<T>( px );
+		this->y = static_cast<T>( py );
 	}
 
 	THexAxial( const THexCube<T>& );
@@ -49,18 +52,32 @@ struct THexAxial : public Furrovine::TVector2<T> {
 		return -x - y;
 	}
 
+	THexAxial neighbor( HexDirection direction ) const {
+		const auto& entry = Neighbors[ static_cast<std::ptrdiff_t>( direction ) ];
+		return THexAxial<T>( *this + entry );
+	}
+
+	THexAxial shift( HexDirection direction, std::ptrdiff_t magnitude = 1 ) const {
+		THexAxial<T> ax = *this;
+		std::ptrdiff_t magsign = Furrovine::sign( magnitude );
+		for ( std::ptrdiff_t i = 0; i != magnitude; i += magsign ) {
+			ax = ax.neighbor( direction );
+		}
+		return ax;
+	}
+
 	template <HexTop top = default_hextop>
-	Furrovine::TVector2<T> to_pixel( double size ) {
+	Furrovine::TVector2<T> to_pixel( double size ) const {
 		double px, py;
 		switch ( top ) {
 		case HexTop::Pointy:
-			px = size * Furrovine::three_root_two<T>( ) * ( x + y / 2.0 );
-			py = size * 3.0 / 2.0 * y;
+			px = size * Furrovine::three_root_two<T>( ) * ( this->x + this->y / 2.0 );
+			py = size * 3.0 / 2.0 * this->y;
 			break;
 		case HexTop::Flat:
 		default:
-			px = size * 3.0 / 2.0 * x;
-			py = size * Furrovine::three_root_two<T>( ) * ( y + x / 2.0 );
+			px = size * 3.0 / 2.0 * this->x;
+			py = size * Furrovine::three_root_two<T>( ) * ( this->y + this->x / 2.0 );
 			break;
 		}
 		return{ static_cast<T>( px ), static_cast<T>( py ) };
@@ -77,6 +94,7 @@ struct THexAxial : public Furrovine::TVector2<T> {
 
 template <typename T>
 struct THexCube : public Furrovine::TVector3<T> {
+	const static Furrovine::Vector3z Neighbors[ 6 ];
 	typedef Furrovine::TVector3<T> base_t;
 
 	template <typename... Tn>
@@ -87,44 +105,49 @@ struct THexCube : public Furrovine::TVector3<T> {
 	THexCube( const THexAxial<T>& );
 	THexCube( THexAxial<T>&& );
 
-	template <typename Arith, HexTop top>
-	THexCube( Furrovine::TVector2<T> p, Arith size, std::integral_constant<HexTop, top> = default_hextop_constant ) {
-		double q, r;
+	template <typename Tv, typename Arith, HexTop top>
+	THexCube( Furrovine::TVector2<Tv> pixel, Arith size, std::integral_constant<HexTop, top> = default_hextop_constant ) {
+		double px, py;
 		switch ( top ) {
 		case HexTop::Pointy:
-			q = ( 1.0 / 3.0 * Furrovine::three_root_two<T>( ) * p.x - 1.0 / 3.0 * p.Y ) / size;
-			r = 2.0 / 3.0 * p.y / size;
+			px = ( 1.0 / 3.0 * Furrovine::three_root_two<T>( ) * pixel.x - 1.0 / 3.0 * pixel.Y ) / size;
+			py = 2.0 / 3.0 * pixel.y / size;
 			break;
 		case HexTop::Flat:
 		default:
-			q = 2.0 / 3.0 * p.x / size;
-			r = ( 1.0 / 3.0 * Furrovine::three_root_two<T>( ) * p.y - 1.0 / 3.0 * p.X ) / size;
+			px = 2.0 / 3.0 * pixel.x / size;
+			py = ( 1.0 / 3.0 * Furrovine::three_root_two<T>( ) * pixel.y - 1.0 / 3.0 * pixel.X ) / size;
 			break;
 		}
-		x = static_cast<T>( q );
-		y = static_cast<T>( r );
-		z = static_cast<T>( -q - r );
+		this->x = static_cast<T>( px );
+		this->y = static_cast<T>( py );
+		this->z = static_cast<T>( -px - py );
 	}
 
 	T sum( ) const {
 		return x + y + z;
 	}
 
+	THexCube neighbor( HexDirection direction ) const {
+		const auto& entry = Neighbors[ static_cast<std::ptrdiff_t>( direction ) ];
+		return THexCube<T>( *this + entry );
+	}
+
 	template <HexTop top = default_hextop>
-	Furrovine::TVector2<T> to_pixel( double size ) {
-		double x, y;
+	Furrovine::TVector2<T> to_pixel( double size ) const {
+		double px, py;
 		switch ( top ) {
 		case HexTop.Pointy:
-			x = size * Furrovine::three_root_two( ) * ( x + z / 2.0 );
-			y = size * 3.0 / 2.0 * z;
+			px = size * Furrovine::three_root_two( ) * ( this->x + this->z / 2.0 );
+			py = size * 3.0 / 2.0 * this->z;
 			break;
 		case HexTop.Flat:
 		default:
-			x = size * 3.0 / 2.0 * x;
-			y = size * Furrovine::three_root_two( ) * ( z + x / 2.0 );
+			px = size * 3.0 / 2.0 * this->x;
+			py = size * Furrovine::three_root_two( ) * ( this->z + this->x / 2.0 );
 			break;
 		}
-		return Furrovine::TVector2<T>( static_cast<T>( x ), static_cast<T>( y ) );
+		return Furrovine::TVector2<T>( static_cast<T>( px ), static_cast<T>( py ) );
 	}
 
 	bool operator == ( const THexCube& right ) const {
@@ -160,8 +183,20 @@ THexCube<T>::THexCube( THexAxial<T>&& axial )
 
 }
 
+template <typename T>
+const Furrovine::Vector2z THexAxial<T>::Neighbors[ 6 ] = {
+		{ +1, 0 }, { +1, -1 }, { 0, -1 },
+		{ -1, 0 }, { -1, +1 }, { 0, +1 }
+};
+
+template <typename T>
+const Furrovine::Vector3z THexCube<T>::Neighbors[ 6 ] = {
+	{ +1, -1, 0 }, { +1, 0, -1 }, { 0, +1, -1 },
+	{ -1, +1, 0 }, { -1, 0, +1 }, { 0, -1, +1 }
+};
+
 template <HexTop top = default_hextop, typename T>
-auto to_pixel( T&& coord, double size ) {
+auto to_pixel( T&& coord, double size ) -> decltype( coord.to_pixel( size ) ) {
 	return coord.to_pixel( size );
 }
 
@@ -187,5 +222,19 @@ THexCube<T> round( const THexCube<T>& cube ) {
 
 template <typename T>
 THexAxial<T> round( const THexAxial<T>& ax ) {
-	return THexAxial<T>( round( HexCube( ax ) ) );
+	return THexAxial<T>( round( THexCube<T>( ax ) ) );
+}
+
+inline std::ptrdiff_t hex_count( std::ptrdiff_t r ) {
+	return 1 + ( 3 * r ) + ( 3 * r *r );
+}
+
+inline Furrovine::bounds<2> hex_storage_bounds( std::ptrdiff_t r ) {
+	std::ptrdiff_t dim = r * 2 + 1;
+	return{ dim, dim };
+}
+
+inline std::size_t hex_storage_size( std::ptrdiff_t r ) {
+	std::ptrdiff_t dim = r * 2 + 1;
+	return dim * dim;
 }
