@@ -5,34 +5,18 @@ const Furrovine::TVector2<std::ptrdiff_t> HexGrid::Neighbors[ 6 ] = {
 	{ -1, 0 }, { -1, +1 }, { 0, +1 }
 };
 
-#include <unordered_set>
-
 void HexGrid::Render( Furrovine::Vector2 offset, Furrovine::Vector2 mouse, Furrovine::Graphics::NymphBatch& batch ) {
 	using namespace Furrovine;
 	Furrovine::Vector2 v = mouse - offset;
 	HexAxial hexmouse = round( HexAxial( v, 20.0f, default_hextop_constant ) );
-	std::vector<HexAxial> axials;
-	std::vector<HexAxial> axialsf;
-	std::unordered_set<const Hex*> addrs;
-	for ( const Hex& hex : *this ) {
-		axialsf.push_back( hex.axial );
-	}
 	
-	
-	int hexc = hex_count( radius );
-	for_each( [ & ] ( const Hex& ohex ) {
-		const Hex& hex = ohex;
+	for ( const auto& hex : *this ) {
 		Furrovine::Vector2 pixel = to_pixel( hex.axial, 20.0 );
 		Furrovine::Color color = Furrovine::Color::White;
 		if ( hex.axial == hexmouse )
 			color = Furrovine::Color::Red;
 		batch.RenderPolygon( shape, Furrovine::nullopt, pixel + offset, 0.0f, Furrovine::Vector2::One, Furrovine::Vector2::Zero, color );
-		axials.push_back( hex.axial );
-		addrs.emplace( &hex );
-	} );
-
-	bool test = axials == axialsf;
-	axials.clear( );
+	}
 }
 
 const Hex& HexGrid::Neighbor( const Hex& hex, HexDirection direction ) const {
