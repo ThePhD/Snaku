@@ -133,6 +133,15 @@ struct THexCube : public Furrovine::TVector3<T> {
 		return THexCube<T>( *this + entry );
 	}
 
+	THexCube shift( HexDirection direction, std::ptrdiff_t magnitude = 1 ) const {
+		THexCube<T> ax = *this;
+		std::ptrdiff_t magsign = Furrovine::sign( magnitude );
+		for ( std::ptrdiff_t i = 0; i != magnitude; i += magsign ) {
+			ax = ax.neighbor( direction );
+		}
+		return ax;
+	}
+
 	template <HexTop top = default_hextop>
 	Furrovine::TVector2<T> to_pixel( double size ) const {
 		double px, py;
@@ -227,6 +236,17 @@ THexAxial<T> round( const THexAxial<T>& ax ) {
 
 inline std::ptrdiff_t hex_count( std::ptrdiff_t r ) {
 	return 1 + ( 3 * r ) + ( 3 * r *r );
+}
+
+template <typename T>
+T hex_distance( const THexCube<T>& h1, const THexCube<T>& h2 ) {
+	return std::max( std::abs( h1.x - h2.x ), std::abs( h1.y - h2.y ), Std::abs( h1.z - h2.z ) );
+}
+
+template <typename T>
+T hex_distance( const THexAxial<T>& h1, const THexAxial<T>& h2 ) {
+	return ( std::abs( h1.x - h2.x ) + abs( h1.y - h2.y )
+		+ std::abs( h1.x + h1.y - h2.x - h2.y ) ) / static_cast<T>( 2 );
 }
 
 inline Furrovine::bounds<2> hex_storage_bounds( std::ptrdiff_t r ) {

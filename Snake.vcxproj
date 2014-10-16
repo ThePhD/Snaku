@@ -93,6 +93,7 @@
     <ClInclude Include="HexCoord.h" />
     <ClInclude Include="HexDirection.h" />
     <ClInclude Include="HexGrid.h" />
+    <ClInclude Include="Snake.h" />
     <ClInclude Include="THex.h" />
     <ClInclude Include="HexTop.h" />
     <ClInclude Include="THexCoord.h" />

@@ -1,6 +1,7 @@
 #include "HexGrid.h"
+#include <Furrovine++/iterator.h>
 
-const Furrovine::TVector2<std::ptrdiff_t> HexGrid::Neighbors[ 6 ] = {
+const Furrovine::Vector2z HexGrid::Neighbors[ 6 ] = {
 	{ +1, 0 }, { +1, -1 }, { 0, -1 },
 	{ -1, 0 }, { -1, +1 }, { 0, +1 }
 };
@@ -9,12 +10,26 @@ void HexGrid::Render( Furrovine::Vector2 offset, Furrovine::Vector2 mouse, Furro
 	using namespace Furrovine;
 	Furrovine::Vector2 v = mouse - offset;
 	HexAxial hexmouse = round( HexAxial( v, 20.0f, default_hextop_constant ) );
-	
+	std::vector<HexAxial> ringhex;
+	float mousedist = hex_distance( hexmouse, HexAxial{} );
 	for ( const auto& hex : *this ) {
 		Furrovine::Vector2 pixel = to_pixel( hex.axial, 20.0 );
-		Furrovine::Color color = Furrovine::Color::White;
-		if ( hex.axial == hexmouse )
-			color = Furrovine::Color::Red;
+		Furrovine::Color color = Furrovine::Color::Black;
+		if ( hex.axial == hexmouse ) {
+			color.r = 255;
+		}
+		batch.RenderPolygon( shape, Furrovine::nullopt, pixel + offset, 0.0f, Furrovine::Vector2::One, Furrovine::Vector2::Zero, color );
+	}
+	
+	if ( mousedist > radius )
+		return;
+	
+	for ( const auto& hex : ring( static_cast<std::ptrdiff_t>( mousedist ) ) ) {
+		Furrovine::Vector2 pixel = to_pixel( hex.axial, 20.0 );
+		Furrovine::Color color = Furrovine::Color::Green;
+		if ( hex.axial == hexmouse ) {
+			color.r = 255;
+		}
 		batch.RenderPolygon( shape, Furrovine::nullopt, pixel + offset, 0.0f, Furrovine::Vector2::One, Furrovine::Vector2::Zero, color );
 	}
 }
@@ -24,7 +39,7 @@ const Hex& HexGrid::Neighbor( const Hex& hex, HexDirection direction ) const {
 }
 
 Hex& HexGrid::Neighbor( const Hex& hex, HexDirection direction ) {
-	THexAxial<std::ptrdiff_t> ax = hex.axial;
+	HexAxialz ax = hex.axial;
 	ax = ax.neighbor( direction );
 	return ( *this )[ ax ];
 }

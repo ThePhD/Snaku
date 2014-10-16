@@ -14,6 +14,7 @@
 #include <Furrovine++/Pipeline/TextureLoader.h>
 #include <Furrovine++/Pipeline/RasterFontLoader.h>
 #include <Furrovine++/Pipeline/PNGSaver.h>
+#include <Furrovine++/queue.h>
 
 using namespace Furrovine;
 using namespace Furrovine::Input;
@@ -35,9 +36,10 @@ private:
 	Everything everything;
 	GameState gamestate;
 	PauseState pausestate;
-	MessageQueue messages;
+	Furrovine::queue<Message> messages;
 	HexGrid grid;
 	Vector2 mouse;
+	String typed;
 
 public:
 
@@ -52,32 +54,41 @@ public:
 	everything( { windowdriver, window, graphics, textdevice, nymph, cache, states } ),
 	gamestate( everything ),
 	pausestate( everything ),
-	grid( 3 ) {
+	grid( 7 ) {
 		WindowService = window;
 		GraphicsService = graphics;
 		Graphics2DService = graphics2d;
+		RasterFontDescription desc = RasterFontDescription( "Arial", 24.0f );
+		desc.CharacterRanges.push_back( CodepointRange( 0x2661, 0x2665 ) );
 		states.push( gamestate );
 		cache.add( "test", ImageLoader( )( load_single, "test.wbmp" ) );
 		cache.add( "test.texture", TextureLoader( graphics )( cache.get<Image2D>( "test" ) ) );
-		cache.add( "Font", RasterFontLoader( graphics, textdevice )( RasterFontDescription( "Arial", 24.0f ) ) );
+		cache.add( "Font", RasterFontLoader( graphics, textdevice )( desc ) );
+		window.SetCursorVisible( false );
 		window.Show( );
 	}
 
 protected:
 
 	void Loop( ) {
-		optional<MessageData> opmessagedata;
+		optional<Message> opmessagedata;
 		windowdriver.Push( window, messages );
 		while ( ( opmessagedata = messages.pop( ) ) ) {
-			MessageData& messagedata = opmessagedata.value();
-			switch ( messagedata.header.id ) {
-			case MessageId::Mouse: {
-				Message<MouseEvent>& message = messagedata.as<MouseEvent>( );
-				mouse = message.item.Relative;
-				} break;
-			case MessageId::Keyboard: { 
-				Message<KeyboardEvent>& message = messagedata.as<KeyboardEvent>( );
-				if ( message.item.Key == Key::Enter ) {
+			Message& messagedata = opmessagedata.value();
+			switch ( messagedata.class_idx ) {
+			case Message::index<MouseEvent>::value: {
+				MouseEvent& message = messagedata.get<MouseEvent>( );
+				mouse = message.relative;
+				break; }
+			case Message::index<WindowEvent>::value: {
+				WindowEvent& message = messagedata.get<WindowEvent>( );
+				if ( message.Signal == WindowEventSignal::Destroy ) {
+					Exit( );
+				}
+				break; }
+			case Message::index<KeyboardEvent>::value: {
+				KeyboardEvent& message = messagedata.get<KeyboardEvent>( );
+				if ( message.key == Key::Enter ) {
 					if ( !states.contains( pausestate ) ) {
 						states.push( pausestate );
 					}
@@ -85,8 +96,12 @@ protected:
 						states.pop( );
 					}
 				}
-				} break;
-			case MessageId::None:
+				break; }
+			case Message::index<TextEvent>::value: {
+				TextEvent& message = messagedata.get<TextEvent>( );
+				typed.Append( message.cp );
+				break; }
+			case -1:
 			default:
 				break;
 			}
@@ -101,8 +116,10 @@ protected:
 	void Render( ) {
 		graphics.Clear( Color( 96, 96, 128, 128 ) );
 		nymph.Begin( );
-		grid.Render( { 200, 200 }, mouse, nymph );
+		grid.Render( { 400, 300 }, mouse, nymph );
 		nymph.RenderGradient( Region( mouse - 3.0f, Size2( 6.0f, 6.0f ) ), Color::Blue );
+		nymph.RenderString( cache.get<RasterFont>( "Font" ), typed, { 0, 0 } );
+		nymph.RenderGradient( Region( Vector2( 50.0f, 50.0f ), Size2( 50.0f, 50.0f ) ), Color::Blue );
 		nymph.End( );
 
 		states.Render( );

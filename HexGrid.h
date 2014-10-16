@@ -8,7 +8,7 @@
 #include <Furrovine++/Graphics/NymphBatch.h>
 #include <Furrovine++/Graphics/Nymphgon.h>
 #include <vector>
-#include <Furrovine++/operator_overloads.h>
+#include <Furrovine++/iterator.h>
 
 template <typename T>
 struct hex_iterator : std::iterator<std::forward_iterator_tag, THexAxial<T>> {
@@ -69,9 +69,14 @@ template <typename T>
 struct hex_ring_iterator : std::iterator<std::forward_iterator_tag, THexAxial<T>> {
 	std::ptrdiff_t radius, i, j;
 	HexAxialz axial;
-	
-	hex_ring_iterator( std::ptrdiff_t r, HexDirection direction = HexDirection::One ) : radius( r ), i( 0 ), j( 0 ), axial(HexAxialz(0, 0).shift( direction, r )) {
-		
+
+	hex_ring_iterator( std::ptrdiff_t r ) : radius( r ), i( 0 ), j( 0 ), axial( HexAxialz( 0, 0 ).shift( static_cast<HexDirection>( 0 + 4 ), r ) ) {
+
+	}
+
+	hex_ring_iterator( std::ptrdiff_t r, Furrovine::iterator_end_t ) : hex_ring_iterator( r ) {
+		j = radius;
+		i = 6;
 	}
 
 	THexAxial<T> operator* ( ) const {
@@ -84,10 +89,16 @@ struct hex_ring_iterator : std::iterator<std::forward_iterator_tag, THexAxial<T>
 			axial = axial.neighbor( static_cast<HexDirection>( i ) );
 			return *this;
 		}
+		++i;
 		if ( i < 6 ) {
-			++i;
+			if ( radius != 0 ) {
+				axial = axial.neighbor( static_cast<HexDirection>( i - 1 ) );
+			}
+			else {
+				i = 6;
+			}
+			j = 0;
 		}
-		j = 0;
 		return *this;
 	}
 
@@ -209,30 +220,8 @@ public:
 		return hex_grid_iterator( *this, hex_iterator<std::ptrdiff_t>( radius, hex_count( radius ) ) );
 	}
 
-	template <typename TFx>
-	void for_each( TFx&& fx, HexDirection start = HexDirection::Four ) const {
-		HexCubez minimum{ -radius, -radius, -radius };
-		HexCubez maximum{ radius, radius, radius };
-		for ( std::ptrdiff_t x = minimum.x; x <= maximum.x; ++x ) {
-			auto yfirst = std::max( minimum.y, -x - maximum.z );
-			auto ylast = std::min( maximum.y, -x - minimum.z );
-			for ( std::ptrdiff_t y = yfirst; y <= ylast; ++y ) {
-				fx( ( *this )[ { x, y } ] );
-			}
-		}
-	}
-
-	template <typename TFx>
-	void for_each( TFx&& fx, HexDirection start = HexDirection::Four ) {
-		HexCubez minimum{ -radius, -radius, -radius };
-		HexCubez maximum{ radius, radius, radius };
-		for ( std::ptrdiff_t x = minimum.x; x <= maximum.x; ++x ) {
-			auto yfirst = std::max( minimum.y, -x - maximum.z );
-			auto ylast = std::min( maximum.y, -x - minimum.z );
-			for ( std::ptrdiff_t y = yfirst; y <= ylast; ++y ) {
-				fx( ( *this )[ { x, y } ] );
-			}
-		}
+	Furrovine::iterator_range<hex_grid_ring_iterator> ring( std::ptrdiff_t r ) {
+		return Furrovine::make_iterator_range( hex_grid_ring_iterator( *this, hex_ring_iterator<std::ptrdiff_t>( r ) ), hex_grid_ring_iterator( *this, hex_ring_iterator<std::ptrdiff_t>( r, Furrovine::iterator_end ) ) );
 	}
 
 	void Render( Furrovine::Vector2 offset, Furrovine::Vector2 mouse, Furrovine::Graphics::NymphBatch& batch );
