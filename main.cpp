@@ -3,6 +3,7 @@
 #include "PauseState.h"
 #include "HexGrid.h"
 
+#include <Furrovine++/queue.h>
 #include <Furrovine++/FurrovineGame.h>
 #include <Furrovine++/ResourceCache.h>
 #include <Furrovine++/Text/RasterFont.h>
@@ -14,7 +15,11 @@
 #include <Furrovine++/Pipeline/TextureLoader.h>
 #include <Furrovine++/Pipeline/RasterFontLoader.h>
 #include <Furrovine++/Pipeline/PNGSaver.h>
-#include <Furrovine++/queue.h>
+#include <Furrovine++/Input/KeyboardDevice.h>
+#include <Furrovine++/Input/MouseDevice.h>
+#include <Furrovine++/Input/HIDDevice.h>
+#include <Furrovine++/Input/InputEvents.h>
+#include <Furrovine++/Input/Xbox360Controller.h>
 
 using namespace Furrovine;
 using namespace Furrovine::Input;
@@ -37,9 +42,12 @@ private:
 	GameState gamestate;
 	PauseState pausestate;
 	Furrovine::queue<Message> messages;
+	InputEvents inputevents;
 	HexGrid grid;
 	Vector2 mouse;
 	String typed;
+	KeyboardDevice keyboarddevice;
+	HIDDevice hiddevice;
 
 public:
 
@@ -73,8 +81,9 @@ protected:
 	void Loop( ) {
 		optional<Message> opmessagedata;
 		windowdriver.Push( window, messages );
-		while ( ( opmessagedata = messages.pop( ) ) ) {
+		while ( ( opmessagedata = messages.pop_front( ) ) ) {
 			Message& messagedata = opmessagedata.value();
+			inputevents.Process( messagedata );
 			switch ( messagedata.class_idx ) {
 			case Message::index<MouseEvent>::value: {
 				MouseEvent& message = messagedata.get<MouseEvent>( );
@@ -110,16 +119,50 @@ protected:
 	}
 
 	void Update( ) {
+		hiddevice.Update( );
+		keyboarddevice.Update( );
+		
+		// Feedback works on X360 right now, nothin'
+		// else however until HID Report Packing
+		// is implemented...
+		if ( keyboarddevice.Down( Key::LeftShift ) ) {
+			hiddevice.Feedback( 0, 1.0 );
+		}
+		else {
+			hiddevice.Feedback( 0, 0.0 );
+		}
+
+		if ( keyboarddevice.Down( Key::RightShift ) ) {
+			hiddevice.Feedback( 1, 1.0 );
+		}
+		else {
+			hiddevice.Feedback( 1, 0.0 );
+		}
+		
 		states.Update( );
 	}
 
 	void Render( ) {
+		Xbox360Controller controller( hiddevice );
 		graphics.Clear( Color( 96, 96, 128, 128 ) );
 		nymph.Begin( );
 		grid.Render( { 400, 300 }, mouse, nymph );
 		nymph.RenderGradient( Region( mouse - 3.0f, Size2( 6.0f, 6.0f ) ), Color::Blue );
-		nymph.RenderString( cache.get<RasterFont>( "Font" ), typed, { 0, 0 } );
-		nymph.RenderGradient( Region( Vector2( 50.0f, 50.0f ), Size2( 50.0f, 50.0f ) ), Color::Blue );
+		
+		auto leftstick = controller.LeftStick( );
+		auto rightstick = controller.RightStick( );
+		auto triggers = controller.Triggers( );
+
+		nymph.RenderString( cache.get<RasterFont>( "Font" ), 
+							Format( "Left Stick {0} {1}", leftstick.x, leftstick.y ), 
+							{ 0, 0 } );
+		nymph.RenderString( cache.get<RasterFont>( "Font" ), 
+							Format( "Right Stick {0} {1}", rightstick.x, rightstick.y ),
+							{ 0, 20 } );
+		nymph.RenderString( cache.get<RasterFont>( "Font" ), 
+							Format( "Triggers {0} {1}", triggers.x, triggers.y ),
+							{ 0, 40 } );
+		
 		nymph.End( );
 
 		states.Render( );
