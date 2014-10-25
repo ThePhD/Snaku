@@ -19,7 +19,7 @@
 #include <Furrovine++/Input/MouseDevice.h>
 #include <Furrovine++/Input/HIDDevice.h>
 #include <Furrovine++/Input/InputEvents.h>
-#include <Furrovine++/Input/Xbox360Controller.h>
+#include <iostream>
 
 using namespace Furrovine;
 using namespace Furrovine::Input;
@@ -27,6 +27,47 @@ using namespace Furrovine::IO;
 using namespace Furrovine::Graphics;
 using namespace Furrovine::Text;
 using namespace Furrovine::Pipeline;
+
+enum class Control {
+	MoveUp,
+	MoveDown,
+	MoveRight,
+	MoveLeft,
+};
+
+enum class MoveFlags {
+	None = 0x0,
+	Up = 0x01,
+	Down = 0x02,
+	Right = 0x04,
+	Left = 0x08
+};
+
+template <typename Cont>
+MoveFlags FromControls( Cont&& cont ) {
+	using namespace Furrovine::enums::operators;
+	MoveFlags flags = MoveFlags::None;
+	for ( const Control& control : cont ) {
+		switch ( control ) {
+		case Control::MoveLeft:
+			flags |= MoveFlags::Left;
+			break;
+		case Control::MoveDown:
+			flags |= MoveFlags::Down;
+			break;
+		case Control::MoveUp:
+			flags |= MoveFlags::Up;
+			break;
+		case Control::MoveRight:
+			flags |= MoveFlags::Right;
+			break;
+		}
+	}
+	return flags;
+}
+
+template <>
+struct Furrovine::enums::is_flags<MoveFlags> : std::true_type{};
 
 class Snaku : public FurrovineGame {
 private:
@@ -42,12 +83,12 @@ private:
 	GameState gamestate;
 	PauseState pausestate;
 	Furrovine::queue<Message> messages;
-	InputEvents inputevents;
+	InputEvents<Control> inputevents;
 	HexGrid grid;
-	Vector2 mouse;
-	String typed;
+	MouseDevice mousedevice;
 	KeyboardDevice keyboarddevice;
 	HIDDevice hiddevice;
+	std::vector<Control> controls;
 
 public:
 
@@ -66,9 +107,10 @@ public:
 		WindowService = window;
 		GraphicsService = graphics;
 		Graphics2DService = graphics2d;
+		SetupControls( );
 		RasterFontDescription desc = RasterFontDescription( "Arial", 24.0f );
 		desc.CharacterRanges.push_back( CodepointRange( 0x2661, 0x2665 ) );
-		states.push( gamestate );
+		states.push( gamestate ); 
 		cache.add( "test", ImageLoader( )( load_single, "test.wbmp" ) );
 		cache.add( "test.texture", TextureLoader( graphics )( cache.get<Image2D>( "test" ) ) );
 		cache.add( "Font", RasterFontLoader( graphics, textdevice )( desc ) );
@@ -77,6 +119,28 @@ public:
 	}
 
 protected:
+
+	void SetupControls( ) {
+		inputevents.Intent += [ & ] ( Control c ) {
+			controls.push_back( c );
+		};
+
+		ButtonInput input{ 
+			StateInputType::KeyboardKey,
+			0,
+			static_cast<int32>( Key::A ),
+			false };
+		inputevents.Map( input, Control::MoveLeft );
+
+		input.Id = static_cast<intuz>( Key::D );
+		inputevents.Map( input, Control::MoveRight );
+		
+		input.Id = static_cast<intuz>( Key::W );
+		inputevents.Map( input, Control::MoveUp );
+		
+		input.Id = static_cast<intuz>( Key::S );
+		inputevents.Map( input, Control::MoveDown );
+	}
 
 	void Loop( ) {
 		optional<Message> opmessagedata;
@@ -87,7 +151,6 @@ protected:
 			switch ( messagedata.class_idx ) {
 			case Message::index<MouseEvent>::value: {
 				MouseEvent& message = messagedata.get<MouseEvent>( );
-				mouse = message.relative;
 				break; }
 			case Message::index<WindowEvent>::value: {
 				WindowEvent& message = messagedata.get<WindowEvent>( );
@@ -108,7 +171,6 @@ protected:
 				break; }
 			case Message::index<TextEvent>::value: {
 				TextEvent& message = messagedata.get<TextEvent>( );
-				typed.Append( message.cp );
 				break; }
 			case -1:
 			default:
@@ -119,9 +181,16 @@ protected:
 	}
 
 	void Update( ) {
-		hiddevice.Update( );
+		MoveFlags movement = FromControls( controls );
+		mousedevice.Update( );
 		keyboarddevice.Update( );
+		hiddevice.Update( );
 		
+		if ( movement != MoveFlags::None ) {
+			static int woof = 0;
+			std::cout << "Movement! " << woof++ << std::endl;
+		}
+
 		// Feedback works on X360 right now, nothin'
 		// else however until HID Report Packing
 		// is implemented...
@@ -140,28 +209,15 @@ protected:
 		}
 		
 		states.Update( );
+
+		controls.clear( );
 	}
 
 	void Render( ) {
-		Xbox360Controller controller( hiddevice );
 		graphics.Clear( Color( 96, 96, 128, 128 ) );
 		nymph.Begin( );
-		grid.Render( { 400, 300 }, mouse, nymph );
-		nymph.RenderGradient( Region( mouse - 3.0f, Size2( 6.0f, 6.0f ) ), Color::Blue );
-		
-		auto leftstick = controller.LeftStick( );
-		auto rightstick = controller.RightStick( );
-		auto triggers = controller.Triggers( );
-
-		nymph.RenderString( cache.get<RasterFont>( "Font" ), 
-							Format( "Left Stick {0} {1}", leftstick.x, leftstick.y ), 
-							{ 0, 0 } );
-		nymph.RenderString( cache.get<RasterFont>( "Font" ), 
-							Format( "Right Stick {0} {1}", rightstick.x, rightstick.y ),
-							{ 0, 20 } );
-		nymph.RenderString( cache.get<RasterFont>( "Font" ), 
-							Format( "Triggers {0} {1}", triggers.x, triggers.y ),
-							{ 0, 40 } );
+		grid.Render( { 400, 300 }, mousedevice.Position(), nymph );
+		nymph.RenderGradient( Region( mousedevice.Position() - 3.0f, Size2( 6.0f, 6.0f ) ), Color::Blue );
 		
 		nymph.End( );
 

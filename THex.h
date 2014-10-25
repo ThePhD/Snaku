@@ -23,7 +23,7 @@ struct THex {
 				 + std::abs( axial.Q + axial.R - target.axial.Q - target.axial.R ) ) / 2.0;
 	}
 
-	THex neighbor( HexDirection hexdirection ) {
+	THex neighbor( HexDirection hexdirection ) const {
 		return THex<T>( axial.neighbor( hexdirection ) );
 	}
 };
