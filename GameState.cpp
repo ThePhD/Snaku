@@ -1,12 +1,12 @@
-#include "GameState.h"
-#include <Furrovine++/Graphics/Texture2D.h>
+#include "GameState.hpp"
+#include <Furrovine++/Graphics/Texture2D.hpp>
 
 using namespace Furrovine;
 using namespace Furrovine::Graphics;
 
 void GameState::Render( ) {
 	Everything& everything = everythingref;
-	ResourceCache<String>& cache = everything.cache;
+	ResourceCache<string>& cache = everything.cache;
 	GraphicsDevice& graphics = everything.graphics;
 	NymphBatch& nymph = everything.nymphbatch;
 

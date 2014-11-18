@@ -1,5 +1,4 @@
-#include "HexGrid.h"
-#include <Furrovine++/iterator.h>
+#include "HexGrid.hpp"
 
 const Furrovine::Vector2z HexGrid::Neighbors[ 6 ] = {
 	{ +1, 0 }, { +1, -1 }, { 0, -1 },

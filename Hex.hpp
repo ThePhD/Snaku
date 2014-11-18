@@ -1,5 +1,5 @@
 #pragma once
 
-#include "THex.h"
+#include "THex.hpp"
 
 typedef THex<float> Hex;

@@ -1,29 +1,29 @@
-﻿#include "StateStack.h"
-#include "GameState.h"
-#include "PauseState.h"
-#include "HexGrid.h"
+﻿#include "StateStack.hpp"
+#include "GameState.hpp"
+#include "PauseState.hpp"
+#include "HexGrid.hpp"
 
-#include <Furrovine++/queue.h>
-#include <Furrovine++/FurrovineGame.h>
-#include <Furrovine++/ResourceCache.h>
-#include <Furrovine++/Text/RasterFont.h>
-#include <Furrovine++/Graphics/Window.h>
-#include <Furrovine++/Graphics/BlendState.h>
-#include <Furrovine++/Graphics/NymphBatch.h>
-#include <Furrovine++/Text/TextDevice.h>
-#include <Furrovine++/Pipeline/ImageLoader.h>
-#include <Furrovine++/Pipeline/TextureLoader.h>
-#include <Furrovine++/Pipeline/RasterFontLoader.h>
-#include <Furrovine++/Pipeline/PNGSaver.h>
-#include <Furrovine++/Input/KeyboardDevice.h>
-#include <Furrovine++/Input/MouseDevice.h>
-#include <Furrovine++/Input/HIDDevice.h>
-#include <Furrovine++/Input/InputEvents.h>
+#include <Furrovine++/queue.hpp>
+#include <Furrovine++/FurrovineGame.hpp>
+#include <Furrovine++/ResourceCache.hpp>
+#include <Furrovine++/Text/RasterFont.hpp>
+#include <Furrovine++/Graphics/Window.hpp>
+#include <Furrovine++/Graphics/BlendState.hpp>
+#include <Furrovine++/Graphics/NymphBatch.hpp>
+#include <Furrovine++/Text/TextDevice.hpp>
+#include <Furrovine++/Pipeline/ImageLoader.hpp>
+#include <Furrovine++/Pipeline/TextureLoader.hpp>
+#include <Furrovine++/Pipeline/RasterFontLoader.hpp>
+#include <Furrovine++/Pipeline/PNGSaver.hpp>
+#include <Furrovine++/Input/KeyboardDevice.hpp>
+#include <Furrovine++/Input/MouseDevice.hpp>
+#include <Furrovine++/Input/HIDDevice.hpp>
+#include <Furrovine++/Input/InputEvents.hpp>
+#include <Furrovine++/text.hpp>
 #include <iostream>
 
 using namespace Furrovine;
 using namespace Furrovine::Input;
-using namespace Furrovine::IO;
 using namespace Furrovine::Graphics;
 using namespace Furrovine::Text;
 using namespace Furrovine::Pipeline;
@@ -77,7 +77,7 @@ private:
 	GraphicsDevice2D graphics2d;
 	TextDevice textdevice;
 	NymphBatch nymph;
-	ResourceCache<String> cache;
+	ResourceCache<string> cache;
 	StateStack states;
 	Everything everything;
 	GameState gamestate;
@@ -121,24 +121,24 @@ public:
 protected:
 
 	void SetupControls( ) {
-		inputevents.Intent += [ & ] ( Control c ) {
-			controls.push_back( c );
+		inputevents.ButtonIntent += [ & ] ( const ButtonInput& b, Control c ) {
+			if ( b.Value )
+				controls.push_back( c );
 		};
 
-		ButtonInput input{ 
+		StateInputPredicate input{ 
+			-1,
 			StateInputType::KeyboardKey,
-			0,
-			static_cast<int32>( Key::A ),
-			false };
+			static_cast<int32>( Key::A ) };
 		inputevents.Map( input, Control::MoveLeft );
 
-		input.Id = static_cast<intuz>( Key::D );
+		input.Id = static_cast<int32>( Key::D );
 		inputevents.Map( input, Control::MoveRight );
 		
-		input.Id = static_cast<intuz>( Key::W );
+		input.Id = static_cast<int32>( Key::W );
 		inputevents.Map( input, Control::MoveUp );
 		
-		input.Id = static_cast<intuz>( Key::S );
+		input.Id = static_cast<int32>( Key::S );
 		inputevents.Map( input, Control::MoveDown );
 	}
 

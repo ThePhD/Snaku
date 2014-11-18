@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Everything.h"
+#include "Everything.hpp"
 
 class GameState : public State {
 private:

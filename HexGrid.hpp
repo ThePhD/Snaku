@@ -1,14 +1,14 @@
 ﻿#pragma once
 
-#include "HexDirection.h"
-#include "HexCoord.h"
-#include "Hex.h"
-#include <Furrovine++/Size2.h>
-#include <Furrovine++/optional.h>
-#include <Furrovine++/Graphics/NymphBatch.h>
-#include <Furrovine++/Graphics/Nymphgon.h>
+#include "HexDirection.hpp"
+#include "HexCoord.hpp"
+#include "Hex.hpp"
+#include <Furrovine++/Size2.hpp>
+#include <Furrovine++/optional.hpp>
+#include <Furrovine++/iterator_container.hpp>
+#include <Furrovine++/Graphics/NymphBatch.hpp>
+#include <Furrovine++/Graphics/Nymphgon.hpp>
 #include <vector>
-#include <Furrovine++/iterator.h>
 
 template <typename T>
 struct hex_iterator : std::iterator<std::forward_iterator_tag, THexAxial<T>> {
@@ -220,8 +220,8 @@ public:
 		return hex_grid_iterator( *this, hex_iterator<std::ptrdiff_t>( radius, hex_count( radius ) ) );
 	}
 
-	Furrovine::iterator_range<hex_grid_ring_iterator> ring( std::ptrdiff_t r ) {
-		return Furrovine::make_iterator_range( hex_grid_ring_iterator( *this, hex_ring_iterator<std::ptrdiff_t>( r ) ), hex_grid_ring_iterator( *this, hex_ring_iterator<std::ptrdiff_t>( r, Furrovine::iterator_end ) ) );
+	Furrovine::iterator_container<hex_grid_ring_iterator> ring( std::ptrdiff_t r ) {
+		return Furrovine::make_iterator_container( hex_grid_ring_iterator( *this, hex_ring_iterator<std::ptrdiff_t>( r ) ), hex_grid_ring_iterator( *this, hex_ring_iterator<std::ptrdiff_t>( r, Furrovine::iterator_end ) ) );
 	}
 
 	void Render( Furrovine::Vector2 offset, Furrovine::Vector2 mouse, Furrovine::Graphics::NymphBatch& batch );

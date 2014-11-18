@@ -1,6 +1,6 @@
 #pragma once
 
-#include "THexCoord.h"
+#include "THexCoord.hpp"
 
 template <typename T>
 struct THex {

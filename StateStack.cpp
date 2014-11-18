@@ -1,4 +1,4 @@
-#include "StateStack.h"
+#include "StateStack.hpp"
 #include <algorithm>
 
 void StateStack::Render( ) {

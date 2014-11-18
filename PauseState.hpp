@@ -1,7 +1,7 @@
 #pragma once
 
-#include "State.h"
-#include "Everything.h"
+#include "State.hpp"
+#include "Everything.hpp"
 
 class PauseState : public State {
 private:

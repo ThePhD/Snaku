@@ -1,10 +1,10 @@
 #pragma once
 
-#include "HexTop.h"
-#include "HexDirection.h"
-#include <Furrovine++/bounds.h>
-#include <Furrovine++/Vector2.h>
-#include <Furrovine++/Vector3.h>
+#include "HexTop.hpp"
+#include "HexDirection.hpp"
+#include <Furrovine++/bounds.hpp>
+#include <Furrovine++/Vector2.hpp>
+#include <Furrovine++/Vector3.hpp>
 
 template <typename T>
 struct THexAxial;

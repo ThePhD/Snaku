@@ -1,6 +1,6 @@
 #pragma once
 
-#include "THexCoord.h"
+#include "THexCoord.hpp"
 
 typedef THexAxial<float> HexAxial;
 typedef THexCube<float> HexCube;

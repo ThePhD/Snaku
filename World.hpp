@@ -1,6 +1,6 @@
 #pragma once
 
-#include "HexGrid.h"
+#include "HexGrid.hpp"
 
 struct World {
 	float speed = 1.0f;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "HexCoord.h"
+#include "HexCoord.hpp"
 
 struct Snake {
 	std::vector<HexAxial> positions;
