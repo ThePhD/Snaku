@@ -111,9 +111,9 @@ public:
 		RasterFontDescription desc = RasterFontDescription( "Arial", 24.0f );
 		desc.CharacterRanges.push_back( CodepointRange( 0x2661, 0x2665 ) );
 		states.push( gamestate ); 
-		cache.add( "test", ImageLoader( )( load_single, "test.wbmp" ) );
-		cache.add( "test.texture", TextureLoader( graphics )( cache.get<Image2D>( "test" ) ) );
-		cache.add( "Font", RasterFontLoader( graphics, textdevice )( desc ) );
+		//cache.add( "test", ImageLoader( )( load_single, "test.wbmp" ) );
+		//cache.add( "test.texture", TextureLoader( graphics )( cache.get<Image2D>( "test" ) ) );
+		//cache.add( "Font", RasterFontLoader( graphics, textdevice )( desc ) );
 		window.SetCursorVisible( false );
 		window.Show( );
 	}
@@ -227,6 +227,6 @@ protected:
 };
 
 int main( ) {
-	Snaku snaku{ };
+	Snaku snaku{};
 	snaku.Run( );
 }
