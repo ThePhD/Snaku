@@ -14,7 +14,7 @@ struct THexCube;
 
 template <typename T>
 struct THexAxial : public Furrovine::TVector2<T> {
-	const static Furrovine::Vector2z Neighbors[ 6 ];
+	const static THexAxial<T> Neighbors[ 6 ];
 	typedef Furrovine::TVector2<T> base_t;
 
 	template <typename... Tn>
@@ -54,7 +54,7 @@ struct THexAxial : public Furrovine::TVector2<T> {
 
 	THexAxial neighbor( HexDirection direction ) const {
 		const auto& entry = Neighbors[ static_cast<std::ptrdiff_t>( direction ) ];
-		return THexAxial<T>( *this + entry );
+		return THexAxial<T>( *this + THexAxial<T>( entry ) );
 	}
 
 	THexAxial shift( HexDirection direction, std::ptrdiff_t magnitude = 1 ) const {
@@ -193,7 +193,7 @@ THexCube<T>::THexCube( THexAxial<T>&& axial )
 }
 
 template <typename T>
-const Furrovine::Vector2z THexAxial<T>::Neighbors[ 6 ] = {
+const THexAxial<T> THexAxial<T>::Neighbors[ 6 ] = {
 		{ +1, 0 }, { +1, -1 }, { 0, -1 },
 		{ -1, 0 }, { -1, +1 }, { 0, +1 }
 };

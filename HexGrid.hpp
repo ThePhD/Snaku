@@ -5,7 +5,7 @@
 #include "Hex.hpp"
 #include <Furrovine++/Size2.hpp>
 #include <Furrovine++/optional.hpp>
-#include <Furrovine++/iterator_container.hpp>
+#include <Furrovine++/iterator_range.hpp>
 #include <Furrovine++/Graphics/NymphBatch.hpp>
 #include <Furrovine++/Graphics/Nymphgon.hpp>
 #include <vector>
@@ -220,8 +220,8 @@ public:
 		return hex_grid_iterator( *this, hex_iterator<std::ptrdiff_t>( radius, hex_count( radius ) ) );
 	}
 
-	Furrovine::iterator_container<hex_grid_ring_iterator> ring( std::ptrdiff_t r ) {
-		return Furrovine::make_iterator_container( hex_grid_ring_iterator( *this, hex_ring_iterator<std::ptrdiff_t>( r ) ), hex_grid_ring_iterator( *this, hex_ring_iterator<std::ptrdiff_t>( r, Furrovine::iterator_end ) ) );
+	Furrovine::iterator_range<hex_grid_ring_iterator> ring( std::ptrdiff_t r ) {
+		return Furrovine::make_iterator_range( hex_grid_ring_iterator( *this, hex_ring_iterator<std::ptrdiff_t>( r ) ), hex_grid_ring_iterator( *this, hex_ring_iterator<std::ptrdiff_t>( r, Furrovine::iterator_end ) ) );
 	}
 
 	void Render( Furrovine::Vector2 offset, Furrovine::Vector2 mouse, Furrovine::Graphics::NymphBatch& batch );
