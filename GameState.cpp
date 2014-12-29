@@ -10,9 +10,9 @@ void GameState::Render( ) {
 	GraphicsDevice& graphics = everything.graphics;
 	NymphBatch& nymph = everything.nymphbatch;
 
-	//nymph.Begin( );
-	//nymph.Render( cache.get<Texture2D>( "test.texture" ), nullopt );
-	//nymph.End( );
+	nymph.Begin( );
+	nymph.Render( cache.get<Texture2D>( "test.texture" ), nullopt );
+	nymph.End( );
 }
 
 void GameState::Update( ) {
