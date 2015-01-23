@@ -1,6 +1,6 @@
 #include "PauseState.hpp"
 #include <Furrovine++/Pipeline/RasterFontLoader.hpp>
-#include <Furrovine++/Text/RasterFont.hpp>
+#include <Furrovine++/Graphics/TextureFont.hpp>
 
 using namespace Furrovine;
 using namespace Furrovine::Graphics;
@@ -11,7 +11,7 @@ void PauseState::Render( ) {
 	// when I need to.... nice!
 	Everything& everything = everythingref;
 	ResourceCache<string>& cache = everything.cache;
-	RasterFont& font = cache.get<RasterFont>( "Font" );
+	TextureFont& font = cache.get<TextureFont>( "Font" );
 	GraphicsDevice& graphics = everything.graphics;
 	NymphBatch& nymph = everything.nymphbatch;
 

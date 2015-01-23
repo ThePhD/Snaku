@@ -6,11 +6,12 @@
 #include <Furrovine++/queue.hpp>
 #include <Furrovine++/FurrovineGame.hpp>
 #include <Furrovine++/ResourceCache.hpp>
-#include <Furrovine++/Text/RasterFont.hpp>
+#include <Furrovine++/Graphics/TextureFont.hpp>
+#include <Furrovine++/Graphics/TextRenderer.hpp>
 #include <Furrovine++/Graphics/Window.hpp>
 #include <Furrovine++/Graphics/BlendState.hpp>
 #include <Furrovine++/Graphics/NymphBatch.hpp>
-#include <Furrovine++/Text/TextDevice.hpp>
+#include <Furrovine++/Graphics/TextDevice.hpp>
 #include <Furrovine++/Pipeline/ImageLoader.hpp>
 #include <Furrovine++/Pipeline/TextureLoader.hpp>
 #include <Furrovine++/Pipeline/RasterFontLoader.hpp>
@@ -19,7 +20,6 @@
 #include <Furrovine++/Input/MouseDevice.hpp>
 #include <Furrovine++/Input/HIDDevice.hpp>
 #include <Furrovine++/Input/InputEvents.hpp>
-#include <Furrovine++/text.hpp>
 #include <iostream>
 
 using namespace Furrovine;
@@ -89,6 +89,7 @@ private:
 	KeyboardDevice keyboarddevice;
 	HIDDevice hiddevice;
 	std::vector<Control> controls;
+	TextRenderer textrenderer;
 
 public:
 
@@ -103,7 +104,7 @@ public:
 	everything( { windowdriver, window, graphics, textdevice, nymph, cache, states } ),
 	gamestate( everything ),
 	pausestate( everything ),
-	grid( 7 ) {
+	grid( 7 ), textrenderer( graphics ) {
 		WindowService = window;
 		GraphicsService = graphics;
 		Graphics2DService = graphics2d;
@@ -111,9 +112,10 @@ public:
 		RasterFontDescription desc = RasterFontDescription( "Arial", 24.0f );
 		desc.CharacterRanges.push_back( CodepointRange( 0x2661, 0x2665 ) );
 		states.push( gamestate ); 
+		cache.add( "test font", Font( textdevice, desc ) );
+		cache.add( "Font", RasterFontLoader( graphics, textdevice )( desc ) );
 		//cache.add( "test", ImageLoader( )( load_single, "test.wbmp" ) );
 		//cache.add( "test.texture", TextureLoader( graphics )( cache.get<Image2D>( "test" ) ) );
-		//cache.add( "Font", RasterFontLoader( graphics, textdevice )( desc ) );
 		window.SetCursorVisible( false );
 		window.Show( );
 	}
@@ -146,7 +148,7 @@ protected:
 		optional<Message> opmessagedata;
 		windowdriver.Push( window, messages );
 		while ( ( opmessagedata = messages.pop_front( ) ) ) {
-			Message& messagedata = opmessagedata.value();
+			Message& messagedata = opmessagedata.get();
 			inputevents.Process( messagedata );
 			switch ( messagedata.class_idx ) {
 			case Message::index<MouseEvent>::value: {
@@ -216,7 +218,8 @@ protected:
 	void Render( ) {
 		graphics.Clear( Color( 96, 96, 128, 128 ) );
 		nymph.Begin( );
-		grid.Render( { 400, 300 }, mousedevice.Position(), nymph );
+		textrenderer.Render( cache.get<Font>( "test font" ), u8"Some Text™ ♥", { 0,0 } );
+		grid.Render( { 400, 300 }, mousedevice.Position( ), nymph );
 		nymph.RenderGradient( Region( mousedevice.Position() - 3.0f, Size2( 6.0f, 6.0f ) ), Color::Blue );
 		
 		nymph.End( );
