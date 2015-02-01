@@ -14,7 +14,7 @@
 #include <Furrovine++/Graphics/TextDevice.hpp>
 #include <Furrovine++/Pipeline/ImageLoader.hpp>
 #include <Furrovine++/Pipeline/TextureLoader.hpp>
-#include <Furrovine++/Pipeline/RasterFontLoader.hpp>
+#include <Furrovine++/Pipeline/TextureFontLoader.hpp>
 #include <Furrovine++/Pipeline/PNGSaver.hpp>
 #include <Furrovine++/Input/KeyboardDevice.hpp>
 #include <Furrovine++/Input/MouseDevice.hpp>
@@ -109,11 +109,11 @@ public:
 		GraphicsService = graphics;
 		Graphics2DService = graphics2d;
 		SetupControls( );
-		RasterFontDescription desc = RasterFontDescription( "Arial", 24.0f );
+		TextureFontDescription desc = TextureFontDescription( "Arial", 14.0f );
 		desc.CharacterRanges.push_back( CodepointRange( 0x2661, 0x2665 ) );
 		states.push( gamestate ); 
 		cache.add( "test font", Font( textdevice, desc ) );
-		cache.add( "Font", RasterFontLoader( graphics, textdevice )( desc ) );
+		cache.add( "Font", TextureFontLoader( graphics, textdevice )( desc ) );
 		//cache.add( "test", ImageLoader( )( load_single, "test.wbmp" ) );
 		//cache.add( "test.texture", TextureLoader( graphics )( cache.get<Image2D>( "test" ) ) );
 		window.SetCursorVisible( false );

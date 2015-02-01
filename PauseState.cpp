@@ -1,5 +1,5 @@
 #include "PauseState.hpp"
-#include <Furrovine++/Pipeline/RasterFontLoader.hpp>
+#include <Furrovine++/Pipeline/TextureFontLoader.hpp>
 #include <Furrovine++/Graphics/TextureFont.hpp>
 
 using namespace Furrovine;
