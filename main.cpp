@@ -112,7 +112,7 @@ public:
 		TextureFontDescription desc = TextureFontDescription( "Arial", 14.0f );
 		desc.CharacterRanges.push_back( CodepointRange( 0x2661, 0x2665 ) );
 		states.push( gamestate ); 
-		cache.add( "test font", Font( textdevice, desc ) );
+		cache.add( "test font", FontFace( textdevice, desc ) );
 		cache.add( "Font", TextureFontLoader( graphics, textdevice )( desc ) );
 		//cache.add( "test", ImageLoader( )( load_single, "test.wbmp" ) );
 		//cache.add( "test.texture", TextureLoader( graphics )( cache.get<Image2D>( "test" ) ) );
@@ -218,7 +218,7 @@ protected:
 	void Render( ) {
 		graphics.Clear( Color( 96, 96, 128, 128 ) );
 		nymph.Begin( );
-		textrenderer.Render( cache.get<Font>( "test font" ), u8"Some Text™ ♥", { 0,0 } );
+		textrenderer.Render( cache.get<FontFace>( "test font" ), u8"Some Text™ ♥", { 0,0 }, 0.0f );
 		grid.Render( { 400, 300 }, mousedevice.Position( ), nymph );
 		nymph.RenderGradient( Region( mousedevice.Position() - 3.0f, Size2( 6.0f, 6.0f ) ), Color::Blue );
 		

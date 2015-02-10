@@ -42,7 +42,7 @@
     <IncludePath>../../Furrovine/Furrovine++;../../Furrovine/Furrovine++/include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>../../Furrovine;../../Furrovine/include;$(IncludePath)</IncludePath>
+    <IncludePath>../../Furrovine/Furrovine++;../../Furrovine/Furrovine++/include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
