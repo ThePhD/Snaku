@@ -218,10 +218,11 @@ protected:
 	void Render( ) {
 		graphics.Clear( Color( 96, 96, 128, 128 ) );
 		nymph.Begin( );
-		textrenderer.Render( cache.get<FontFace>( "test font" ), u8"Some Text™ ♥", { 0,0 }, 0.0f );
+		//textrenderer.Render( cache.get<FontFace>( "test font" ), u8"Some Text™ ♥", { 0,0 }, 0.0f );
 		grid.Render( { 400, 300 }, mousedevice.Position( ), nymph );
-		nymph.RenderGradient( Region( mousedevice.Position() - 3.0f, Size2( 6.0f, 6.0f ) ), Color::Blue );
-		
+		nymph.RenderGradient( Region( mousedevice.Position( ) - 3.0f, Size2( 6.0f, 6.0f ) ), Color::Blue );
+		nymph.RenderString( cache.get<TextureFont>( "Font" ), u8"Some Text™ ♥", { 0, 0 } );
+
 		nymph.End( );
 
 		states.Render( );
