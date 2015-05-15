@@ -74,7 +74,6 @@ private:
 	WindowDriver windowdriver;
 	Window window;
 	GraphicsDevice graphics;
-	GraphicsDevice2D graphics2d;
 	TextDevice textdevice;
 	NymphBatch nymph;
 	ResourceCache<string> cache;
@@ -98,7 +97,6 @@ public:
 	window( windowdriver, WindowDescription( "~ Snaku ~" ) ),
 	graphics( window ),
 	textdevice( window ),
-	graphics2d( graphics ),
 	nymph( graphics ),
 	cache(),
 	everything( { windowdriver, window, graphics, textdevice, nymph, cache, states } ),
@@ -107,7 +105,6 @@ public:
 	grid( 7 ), textrenderer( graphics ) {
 		WindowService = window;
 		GraphicsService = graphics;
-		Graphics2DService = graphics2d;
 		SetupControls( );
 		TextureFontDescription desc = TextureFontDescription( "Arial", 14.0f );
 		desc.CharacterRanges.push_back( CodepointRange( 0x2661, 0x2665 ) );
